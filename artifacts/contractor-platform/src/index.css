@@ -166,6 +166,11 @@
     font-family: var(--font-display);
     @apply font-semibold tracking-tight;
   }
+
+  /* Hidden outside print context */
+  .print-only {
+    display: none !important;
+  }
 }
 
 /* Custom Scrollbar */
