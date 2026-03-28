@@ -19,11 +19,11 @@ export default function Settings() {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim()) {
-      toast({ title: "El nombre de la empresa es requerido", variant: "destructive" });
+      toast({ title: "Company name is required", variant: "destructive" });
       return;
     }
     save(form);
-    toast({ title: "Configuración guardada", description: "Los cambios se verán reflejados en los PDFs." });
+    toast({ title: "Settings saved", description: "Changes will appear on all new PDFs." });
   };
 
   const handleReset = () => {
@@ -35,9 +35,9 @@ export default function Settings() {
       <div className="p-6 lg:p-8 max-w-3xl mx-auto space-y-8">
 
         <div>
-          <h1 className="text-3xl font-display font-bold text-foreground">Configuración</h1>
+          <h1 className="text-3xl font-display font-bold text-foreground">Settings</h1>
           <p className="text-muted-foreground mt-1">
-            Información de tu empresa. Aparece en los PDFs de estimados e invoices.
+            Your company information. Appears in the header of every estimate and invoice PDF.
           </p>
         </div>
 
@@ -50,20 +50,20 @@ export default function Settings() {
                 <Building2 className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <h2 className="font-semibold text-foreground">Información de la Empresa</h2>
-                <p className="text-xs text-muted-foreground">Datos que aparecen en el encabezado de cada PDF</p>
+                <h2 className="font-semibold text-foreground">Company Information</h2>
+                <p className="text-xs text-muted-foreground">This data appears in the header of each PDF</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="sm:col-span-2 space-y-1.5">
                 <label className="text-sm font-medium text-foreground">
-                  Nombre de la Empresa <span className="text-destructive">*</span>
+                  Company Name <span className="text-destructive">*</span>
                 </label>
                 <Input
                   value={form.name}
                   onChange={(e) => set("name", e.target.value)}
-                  placeholder="Mi Empresa Constructora"
+                  placeholder="My Construction Company"
                   className="bg-background border-border text-base font-semibold"
                   required
                 />
@@ -75,13 +75,13 @@ export default function Settings() {
                   type="email"
                   value={form.email}
                   onChange={(e) => set("email", e.target.value)}
-                  placeholder="info@empresa.com"
+                  placeholder="info@company.com"
                   className="bg-background border-border"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Teléfono</label>
+                <label className="text-sm font-medium text-foreground">Phone</label>
                 <Input
                   type="tel"
                   value={form.phone}
@@ -92,17 +92,17 @@ export default function Settings() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Sitio Web</label>
+                <label className="text-sm font-medium text-foreground">Website</label>
                 <Input
                   value={form.website}
                   onChange={(e) => set("website", e.target.value)}
-                  placeholder="www.empresa.com"
+                  placeholder="www.company.com"
                   className="bg-background border-border"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Número de Licencia</label>
+                <label className="text-sm font-medium text-foreground">License Number</label>
                 <Input
                   value={form.license}
                   onChange={(e) => set("license", e.target.value)}
@@ -116,34 +116,34 @@ export default function Settings() {
           {/* Address */}
           <div className="bg-card border border-border rounded-xl p-6 space-y-5">
             <div>
-              <h2 className="font-semibold text-foreground">Dirección</h2>
-              <p className="text-xs text-muted-foreground mt-0.5">Dirección física de la empresa</p>
+              <h2 className="font-semibold text-foreground">Address</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">Physical address of your company</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div className="sm:col-span-2 space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Dirección</label>
+                <label className="text-sm font-medium text-foreground">Street Address</label>
                 <Input
                   value={form.address}
                   onChange={(e) => set("address", e.target.value)}
-                  placeholder="123 Calle Principal"
+                  placeholder="123 Main Street"
                   className="bg-background border-border"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-foreground">Ciudad</label>
+                <label className="text-sm font-medium text-foreground">City</label>
                 <Input
                   value={form.city}
                   onChange={(e) => set("city", e.target.value)}
-                  placeholder="Ciudad"
+                  placeholder="City"
                   className="bg-background border-border"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-sm font-medium text-foreground">Estado</label>
+                  <label className="text-sm font-medium text-foreground">State</label>
                   <Input
                     value={form.state}
                     onChange={(e) => set("state", e.target.value)}
@@ -167,12 +167,12 @@ export default function Settings() {
 
           {/* Preview */}
           <div className="bg-card border border-border rounded-xl p-6 space-y-3">
-            <h2 className="font-semibold text-foreground text-sm">Vista previa en PDF</h2>
+            <h2 className="font-semibold text-foreground text-sm">PDF Preview</h2>
             <div className="bg-background rounded-lg p-4 border border-border/50 text-sm space-y-1">
-              <p className="font-bold text-base text-foreground">{form.name || "Nombre de la Empresa"}</p>
+              <p className="font-bold text-base text-foreground">{form.name || "Company Name"}</p>
               {form.address && <p className="text-muted-foreground text-xs">{form.address}{form.city ? `, ${form.city}` : ""}{form.state ? `, ${form.state}` : ""} {form.zip}</p>}
               {form.phone && <p className="text-muted-foreground text-xs">{form.phone}{form.email ? `  ·  ${form.email}` : ""}</p>}
-              {form.license && <p className="text-muted-foreground text-xs">Licencia #: {form.license}</p>}
+              {form.license && <p className="text-muted-foreground text-xs">License #: {form.license}</p>}
             </div>
           </div>
 
@@ -180,11 +180,11 @@ export default function Settings() {
           <div className="flex justify-end gap-3 pt-2">
             {isDirty && (
               <Button type="button" variant="outline" onClick={handleReset} className="border-border">
-                <RotateCcw className="w-4 h-4 mr-2" /> Descartar cambios
+                <RotateCcw className="w-4 h-4 mr-2" /> Discard Changes
               </Button>
             )}
             <Button type="submit" disabled={!isDirty} className="bg-primary text-primary-foreground">
-              <Save className="w-4 h-4 mr-2" /> Guardar Configuración
+              <Save className="w-4 h-4 mr-2" /> Save Settings
             </Button>
           </div>
 

@@ -80,7 +80,7 @@ function SidebarContent({ location, onNavigate }: { location: string; onNavigate
           }`}
         >
           <Settings className={`w-5 h-5 ${location === "/settings" ? "text-primary" : "text-muted-foreground"}`} />
-          Configuración
+          Settings
         </Link>
       </div>
     </>

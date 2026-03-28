@@ -134,11 +134,11 @@ export default function EstimateDetail() {
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" className="border-border bg-card" onClick={() => setPreviewOpen(true)}>
               <Eye className="w-4 h-4 mr-2" />
-              Vista previa PDF
+              PDF Preview
             </Button>
             <Button variant="outline" className="border-border bg-card" onClick={handlePrint} disabled={pdfLoading}>
               <Download className="w-4 h-4 mr-2" />
-              {pdfLoading ? "Generando..." : "Descargar PDF"}
+              {pdfLoading ? "Generating..." : "Download PDF"}
             </Button>
             
             {estimate.status === 'draft' && (
@@ -434,7 +434,7 @@ export default function EstimateDetail() {
               <div>
                 <SheetTitle className="font-display text-base">{estimate.projectName}</SheetTitle>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {estimate.estimateNumber} · {estimate.clientName ?? "Sin cliente"}
+                  {estimate.estimateNumber} · {estimate.clientName ?? "No client"}
                 </p>
               </div>
               <Button
@@ -445,7 +445,7 @@ export default function EstimateDetail() {
                 disabled={pdfLoading}
               >
                 <Download className="w-3.5 h-3.5 mr-1.5" />
-                {pdfLoading ? "Generando..." : "Descargar PDF"}
+                {pdfLoading ? "Generating..." : "Download PDF"}
               </Button>
             </div>
             {/* Template selector */}
@@ -474,20 +474,20 @@ export default function EstimateDetail() {
                   <div className="h-full flex items-center justify-center">
                     <div className="text-center space-y-3">
                       <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                      <p className="text-sm text-muted-foreground">Renderizando PDF...</p>
+                      <p className="text-sm text-muted-foreground">Rendering PDF...</p>
                     </div>
                   </div>
                 );
                 if (error || !url) return (
                   <div className="h-full flex items-center justify-center">
-                    <p className="text-sm text-destructive">Error al generar la vista previa.</p>
+                    <p className="text-sm text-destructive">Error generating preview.</p>
                   </div>
                 );
                 return (
                   <iframe
                     src={url}
                     className="w-full h-full border-0"
-                    title="Vista previa del estimado"
+                    title="Estimate Preview"
                   />
                 );
               }}

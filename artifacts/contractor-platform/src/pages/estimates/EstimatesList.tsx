@@ -111,7 +111,7 @@ export default function EstimatesList() {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-secondary"
-                            title="Vista previa PDF"
+                            title="PDF Preview"
                             onClick={() => setPreviewId(est.id)}
                           >
                             <Eye className="w-4 h-4" />
@@ -163,11 +163,11 @@ function EstimatePreviewSheet({
           <div className="flex items-center justify-between">
             <div>
               <SheetTitle className="font-display text-base">
-                {estimate?.projectName ?? "Vista previa"}
+                {estimate?.projectName ?? "Preview"}
               </SheetTitle>
               {estimate && (
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {estimate.estimateNumber} · {estimate.clientName ?? "Sin cliente"}
+                  {estimate.estimateNumber} · {estimate.clientName ?? "No client"}
                 </p>
               )}
             </div>
@@ -179,7 +179,7 @@ function EstimatePreviewSheet({
                 onClick={() => downloadEstimatePdf(estimate, template)}
               >
                 <Download className="w-3.5 h-3.5 mr-1.5" />
-                Descargar PDF
+                Download PDF
               </Button>
             )}
           </div>
@@ -208,7 +208,7 @@ function EstimatePreviewSheet({
             <div className="h-full flex items-center justify-center">
               <div className="text-center space-y-3">
                 <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                <p className="text-sm text-muted-foreground">Generando vista previa...</p>
+                <p className="text-sm text-muted-foreground">Loading preview...</p>
               </div>
             </div>
           ) : (
@@ -218,20 +218,20 @@ function EstimatePreviewSheet({
                   <div className="h-full flex items-center justify-center">
                     <div className="text-center space-y-3">
                       <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-                      <p className="text-sm text-muted-foreground">Renderizando PDF...</p>
+                      <p className="text-sm text-muted-foreground">Rendering PDF...</p>
                     </div>
                   </div>
                 );
                 if (error || !url) return (
                   <div className="h-full flex items-center justify-center">
-                    <p className="text-sm text-destructive">Error al generar la vista previa.</p>
+                    <p className="text-sm text-destructive">Error generating preview.</p>
                   </div>
                 );
                 return (
                   <iframe
                     src={url}
                     className="w-full h-full border-0"
-                    title="Vista previa del estimado"
+                    title="Estimate Preview"
                   />
                 );
               }}
@@ -360,7 +360,7 @@ function CreateEstimateDialog({ onSuccess }: { onSuccess: (id: number) => void }
                   className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 font-medium transition-colors"
                 >
                   <UserPlus className="w-3.5 h-3.5" />
-                  Nuevo cliente
+                  New client
                 </button>
               )}
             </div>
@@ -371,7 +371,7 @@ function CreateEstimateDialog({ onSuccess }: { onSuccess: (id: number) => void }
                 onChange={(e) => setClientId(e.target.value ? Number(e.target.value) : "")}
                 className="w-full h-10 px-3 py-2 rounded-md bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
               >
-                <option value="">Seleccionar cliente...</option>
+                <option value="">Select client...</option>
                 {clients?.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
                 ))}
@@ -382,7 +382,7 @@ function CreateEstimateDialog({ onSuccess }: { onSuccess: (id: number) => void }
             {showNewClient && (
               <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-3">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs font-semibold text-primary uppercase tracking-wide">Nuevo Cliente</span>
+                  <span className="text-xs font-semibold text-primary uppercase tracking-wide">New Client</span>
                   <button
                     type="button"
                     onClick={cancelNewClient}
@@ -393,11 +393,11 @@ function CreateEstimateDialog({ onSuccess }: { onSuccess: (id: number) => void }
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-foreground">Nombre *</label>
+                  <label className="text-xs font-medium text-foreground">Name *</label>
                   <Input
                     value={newClientName}
                     onChange={(e) => setNewClientName(e.target.value)}
-                    placeholder="Nombre completo o empresa"
+                    placeholder="Full name or company"
                     className="bg-background border-border h-9 text-sm"
                     autoFocus
                   />
@@ -415,7 +415,7 @@ function CreateEstimateDialog({ onSuccess }: { onSuccess: (id: number) => void }
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-foreground">Teléfono</label>
+                    <label className="text-xs font-medium text-foreground">Phone</label>
                     <Input
                       type="tel"
                       value={newClientPhone}
@@ -434,7 +434,7 @@ function CreateEstimateDialog({ onSuccess }: { onSuccess: (id: number) => void }
                   onClick={handleCreateClient}
                 >
                   <Check className="w-3.5 h-3.5 mr-1.5" />
-                  {createClientMutation.isPending ? "Guardando..." : "Guardar y seleccionar"}
+                  {createClientMutation.isPending ? "Saving..." : "Save & select"}
                 </Button>
               </div>
             )}
@@ -442,10 +442,10 @@ function CreateEstimateDialog({ onSuccess }: { onSuccess: (id: number) => void }
 
           <div className="pt-4 flex justify-end gap-3 border-t border-border">
             <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
-              Cancelar
+              Cancel
             </Button>
             <Button type="submit" disabled={createMutation.isPending || !projectName}>
-              {createMutation.isPending ? "Creando..." : "Crear & Continuar"}
+              {createMutation.isPending ? "Creating..." : "Create & Continue"}
             </Button>
           </div>
         </form>

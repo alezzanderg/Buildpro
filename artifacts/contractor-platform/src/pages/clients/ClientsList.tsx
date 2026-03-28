@@ -128,7 +128,7 @@ export default function ClientsList() {
           onSuccess: () => {
             setFormOpen(false);
             refetch();
-            toast({ title: "Cliente actualizado" });
+            toast({ title: "Client updated" });
           },
         }
       );
@@ -140,7 +140,7 @@ export default function ClientsList() {
             setFormOpen(false);
             setForm(EMPTY_FORM);
             refetch();
-            toast({ title: "Cliente creado" });
+            toast({ title: "Client created" });
           },
         }
       );
@@ -155,12 +155,12 @@ export default function ClientsList() {
         onSuccess: () => {
           setDeleteClient(null);
           refetch();
-          toast({ title: "Cliente eliminado" });
+          toast({ title: "Client deleted" });
         },
         onError: () => {
           toast({
-            title: "No se pudo eliminar",
-            description: "El cliente puede tener estimados asociados.",
+            title: "Could not delete client",
+            description: "This client may have estimates associated with them.",
             variant: "destructive",
           });
         },
@@ -169,6 +169,7 @@ export default function ClientsList() {
   };
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
+  const count = clients?.length ?? 0;
 
   return (
     <AppLayout>
@@ -176,20 +177,20 @@ export default function ClientsList() {
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-display font-bold text-foreground">Clientes</h1>
+            <h1 className="text-3xl font-display font-bold text-foreground">Clients</h1>
             <p className="text-muted-foreground mt-1">
-              {clients?.length ?? 0} cliente{(clients?.length ?? 0) !== 1 ? "s" : ""} registrado{(clients?.length ?? 0) !== 1 ? "s" : ""}
+              {count} client{count !== 1 ? "s" : ""} registered
             </p>
           </div>
           <Button className="bg-primary text-primary-foreground" onClick={openCreate}>
-            <Plus className="w-4 h-4 mr-2" /> Añadir Cliente
+            <Plus className="w-4 h-4 mr-2" /> Add Client
           </Button>
         </div>
 
         <div className="relative w-full sm:w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar clientes..."
+            placeholder="Search clients..."
             className="pl-9 bg-card border-border"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -205,14 +206,14 @@ export default function ClientsList() {
             <div className="col-span-full py-20 text-center">
               <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-20" />
               <p className="text-lg font-medium text-foreground">
-                {searchTerm ? "Sin resultados" : "Sin clientes aún"}
+                {searchTerm ? "No results found" : "No clients yet"}
               </p>
               <p className="text-muted-foreground text-sm mt-1">
-                {searchTerm ? "Intenta otra búsqueda." : "Añade tu primer cliente para comenzar."}
+                {searchTerm ? "Try a different search term." : "Add your first client to get started."}
               </p>
               {!searchTerm && (
                 <Button className="mt-4 bg-primary text-primary-foreground" onClick={openCreate}>
-                  <Plus className="w-4 h-4 mr-2" /> Añadir Cliente
+                  <Plus className="w-4 h-4 mr-2" /> Add Client
                 </Button>
               )}
             </div>
@@ -234,18 +235,18 @@ export default function ClientsList() {
         <DialogContent className="bg-card border-border sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="font-display text-xl">
-              {editClient ? "Editar Cliente" : "Nuevo Cliente"}
+              {editClient ? "Edit Client" : "New Client"}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-5 pt-2">
             <div className="space-y-1.5">
               <label className="text-sm font-medium">
-                Nombre <span className="text-destructive">*</span>
+                Name <span className="text-destructive">*</span>
               </label>
               <Input
                 value={form.name}
                 onChange={(e) => setField("name", e.target.value)}
-                placeholder="Nombre completo o empresa"
+                placeholder="Full name or company"
                 className="bg-background border-border"
                 required
                 autoFocus
@@ -259,12 +260,12 @@ export default function ClientsList() {
                   type="email"
                   value={form.email}
                   onChange={(e) => setField("email", e.target.value)}
-                  placeholder="cliente@email.com"
+                  placeholder="client@email.com"
                   className="bg-background border-border"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm font-medium">Teléfono</label>
+                <label className="text-sm font-medium">Phone</label>
                 <Input
                   type="tel"
                   value={form.phone}
@@ -276,27 +277,27 @@ export default function ClientsList() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Dirección</label>
+              <label className="text-sm font-medium">Street Address</label>
               <Input
                 value={form.address}
                 onChange={(e) => setField("address", e.target.value)}
-                placeholder="123 Calle Principal"
+                placeholder="123 Main Street"
                 className="bg-background border-border"
               />
             </div>
 
             <div className="grid grid-cols-5 gap-3">
               <div className="col-span-3 space-y-1.5">
-                <label className="text-sm font-medium">Ciudad</label>
+                <label className="text-sm font-medium">City</label>
                 <Input
                   value={form.city}
                   onChange={(e) => setField("city", e.target.value)}
-                  placeholder="Ciudad"
+                  placeholder="City"
                   className="bg-background border-border"
                 />
               </div>
               <div className="col-span-1 space-y-1.5">
-                <label className="text-sm font-medium">Estado</label>
+                <label className="text-sm font-medium">State</label>
                 <Input
                   value={form.state}
                   onChange={(e) => setField("state", e.target.value.toUpperCase())}
@@ -317,11 +318,11 @@ export default function ClientsList() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-sm font-medium">Notas</label>
+              <label className="text-sm font-medium">Notes</label>
               <Textarea
                 value={form.notes}
                 onChange={(e) => setField("notes", e.target.value)}
-                placeholder="Preferencias, información adicional..."
+                placeholder="Preferences, additional info..."
                 className="bg-background border-border resize-none"
                 rows={3}
               />
@@ -329,10 +330,10 @@ export default function ClientsList() {
 
             <div className="pt-4 flex justify-end gap-3 border-t border-border">
               <Button type="button" variant="outline" onClick={() => setFormOpen(false)}>
-                Cancelar
+                Cancel
               </Button>
               <Button type="submit" disabled={isSaving || !form.name.trim()}>
-                {isSaving ? "Guardando..." : editClient ? "Guardar Cambios" : "Crear Cliente"}
+                {isSaving ? "Saving..." : editClient ? "Save Changes" : "Create Client"}
               </Button>
             </div>
           </form>
@@ -343,18 +344,18 @@ export default function ClientsList() {
       <AlertDialog open={!!deleteClient} onOpenChange={(o) => !o && setDeleteClient(null)}>
         <AlertDialogContent className="bg-card border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar cliente?</AlertDialogTitle>
+            <AlertDialogTitle>Delete client?</AlertDialogTitle>
             <AlertDialogDescription>
-              Se eliminará <strong>{deleteClient?.name}</strong> permanentemente. Esta acción no se puede deshacer.
+              <strong>{deleteClient?.name}</strong> will be permanently deleted. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              Eliminar
+              Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
