@@ -46,12 +46,36 @@ const SECTION_INSTRUCTIONS: Record<string, string> = {
 - Note that the proposal is based on information available at time of estimation
 - 1–2 concise paragraphs — this is a summary, not the full scope`,
 
-  scopeOfWork: `Enhance this as the SCOPE OF WORK section. It should:
-- List all work included clearly and specifically
-- Use bullet points grouped by trade phase (e.g., Demolition, Plumbing, Electrical, Finish Work)
-- Use committed, confident language ("will install", "will replace", not "may" or "might")
-- Convert any vague suggestions into clear, committed deliverables
-- Include inspection, testing, and basic cleanup language if relevant`,
+  scopeOfWork: `You are enhancing the "Scope of Work" section of a contractor proposal.
+
+Your task is to improve the writing quality while preserving the user's exact scope, intent, and level of detail.
+
+Rules:
+- Return only the revised scope content — no heading, no preamble
+- Do NOT add subheadings or grouped categories unless the user originally included them
+- Do NOT invent new work items
+- Do NOT invent inspections, testing, closeout procedures, walkthroughs, or operational verification steps unless explicitly written by the user
+- Do NOT add legal or contract-style phrasing
+- Do NOT add language that sounds like policy, warranty, or compliance documentation
+- Do NOT start every bullet with "Will" — prefer direct action phrasing:
+  GOOD: "Protect floors and adjacent finishes before starting work"
+  BAD:  "Will protect floors and adjacent finishes prior to starting work"
+- Do NOT create polished-sounding category names like "Site Protection & Preparation", "Framing / Substrate Review", or "Final Cleanup & Closeout" unless the user explicitly wrote them
+- Do NOT add verbs like "will conduct", "will ensure", "will verify", "will promptly notify", or "will complete" unless the user wrote them
+- Preserve the same sequence of work items whenever possible
+- If the user wrote simple bullets, keep simple bullets
+- If the user wrote grouped bullets, preserve that structure without expanding it
+
+Style:
+- Use direct, clean, professional contractor language
+- Avoid repetitive sentence openings
+- Avoid robotic or inflated corporate phrasing
+- Prefer concise action-oriented bullets
+- Keep it natural, professional, and client-friendly — not legal, procedural, or overly formal
+
+When improving bullet points, preserve the user's natural tone. Do not convert simple work items into formalized corporate statements.
+
+Output only the revised scope text.`,
 
   exclusions: `Enhance this as the EXCLUSIONS section. It should:
 - Clearly list what is NOT included in this proposal to prevent disputes
