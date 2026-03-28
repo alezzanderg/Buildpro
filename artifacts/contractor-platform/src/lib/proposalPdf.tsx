@@ -15,17 +15,6 @@ function dt(s: string | null | undefined) {
   catch { return s; }
 }
 
-// ── Status badge colors ────────────────────────────────────────────────
-function sc(status: string) {
-  const m: Record<string, { bg: string; bd: string; tx: string }> = {
-    draft:    { bg: "#F8FAFC", bd: "#CBD5E1", tx: "#64748B" },
-    sent:     { bg: "#EFF6FF", bd: "#BFDBFE", tx: "#1D4ED8" },
-    accepted: { bg: "#ECFDF5", bd: "#A7F3D0", tx: "#065F46" },
-    rejected: { bg: "#FEF2F2", bd: "#FECACA", tx: "#DC2626" },
-  };
-  return m[status?.toLowerCase()] ?? m.draft;
-}
-
 // ── Theme palette by template ─────────────────────────────────────────
 type Theme = {
   headerBg: string; headerText: string; accent: string; accentSoft: string;
@@ -44,11 +33,46 @@ function getTheme(template: PdfTemplate): Theme {
   }
 }
 
+// ── Markdown parser ───────────────────────────────────────────────────
+type MdNode =
+  | { kind: "h2"; text: string }
+  | { kind: "bullet"; text: string }
+  | { kind: "para"; text: string };
+
+function stripInline(s: string): string {
+  return s
+    .replace(/\*\*\*(.+?)\*\*\*/g, "$1")
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/\*(.+?)\*/g, "$1")
+    .replace(/_(.+?)_/g, "$1")
+    .replace(/`(.+?)`/g, "$1")
+    .trim();
+}
+
+function parseMarkdown(raw: string): MdNode[] {
+  if (!raw?.trim()) return [];
+  const nodes: MdNode[] = [];
+  for (const line of raw.split("\n")) {
+    const t = line.trimEnd();
+    if (!t.trim()) continue;
+    if (/^#{1,6}\s+/.test(t)) {
+      const text = stripInline(t.replace(/^#{1,6}\s+/, ""));
+      if (text) nodes.push({ kind: "h2", text });
+    } else if (/^[-*•]\s+/.test(t.trim())) {
+      const text = stripInline(t.trim().replace(/^[-*•]\s+/, ""));
+      if (text) nodes.push({ kind: "bullet", text });
+    } else {
+      const text = stripInline(t);
+      if (text) nodes.push({ kind: "para", text });
+    }
+  }
+  return nodes;
+}
+
 // ── Proposal PDF Component ────────────────────────────────────────────
 export function ProposalPdfDocument({ proposal, template = "classic" }: { proposal: ProposalDetail; template?: PdfTemplate }) {
   const co = loadCompanySettings();
   const th = getTheme(template);
-  const st = sc(proposal.status);
 
   const s = StyleSheet.create({
     page:      { fontFamily: R, fontSize: 9, color: th.bodyText, backgroundColor: "#FFFFFF", paddingTop: 0, paddingBottom: 60, paddingHorizontal: 0 },
@@ -62,13 +86,11 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
     coDet:     { fontSize: 7, color: th.mutedText, marginTop: 2, lineHeight: 1.5 },
     docLabel:  { fontSize: 28, fontFamily: B, color: th.accent, letterSpacing: 3, textAlign: "right" },
     docSub:    { fontSize: 8, color: th.mutedText, textAlign: "right", marginTop: 4 },
-    // Meta row
+    // Meta row — only date + valid until (no status)
     metaRow:   { flexDirection: "row", marginTop: 20, gap: 0 },
     metaItem:  { flex: 1, borderTopWidth: 1, borderTopColor: th.accent, paddingTop: 8 },
     metaLbl:   { fontSize: 6.5, fontFamily: B, color: th.accent, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 3 },
     metaVal:   { fontSize: 8, color: th.headerText, fontFamily: B },
-    badge:     { paddingVertical: 3, paddingHorizontal: 8, borderRadius: 20, borderWidth: 1, alignSelf: "flex-start" },
-    badgeTx:   { fontSize: 7, fontFamily: B, textTransform: "uppercase", letterSpacing: 1 },
     // Body
     body:      { paddingHorizontal: 48 },
     // Client card
@@ -77,12 +99,16 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
     cliName:   { fontSize: 13, fontFamily: B, color: th.bodyText },
     cliDet:    { fontSize: 7.5, color: th.mutedText, marginTop: 2 },
     // Sections
-    section:   { marginBottom: 22 },
-    secHdr:    { flexDirection: "row", alignItems: "center", marginBottom: 10 },
+    section:   { marginBottom: 24 },
+    secHdr:    { flexDirection: "row", alignItems: "center", marginBottom: 12 },
     secBar:    { width: 3, height: 14, backgroundColor: th.accent, borderRadius: 2, marginRight: 8 },
     secLbl:    { fontSize: 10, fontFamily: B, color: th.bodyText, textTransform: "uppercase", letterSpacing: 1.5 },
-    secTx:     { fontSize: 8.5, color: th.bodyText, lineHeight: 1.7 },
-    secBox:    { backgroundColor: th.sectionBg, borderRadius: 5, padding: 14, borderLeftWidth: 2, borderLeftColor: th.border },
+    // Markdown-rendered content
+    mdH2:      { fontSize: 9, fontFamily: B, color: th.bodyText, marginTop: 8, marginBottom: 3 },
+    mdPara:    { fontSize: 8.5, color: th.bodyText, lineHeight: 1.75, marginBottom: 4 },
+    mdBulletRow: { flexDirection: "row", marginBottom: 3, paddingLeft: 4 },
+    mdBulletDot: { fontSize: 8.5, color: th.accent, marginRight: 7, lineHeight: 1.75, fontFamily: B },
+    mdBulletTx:  { fontSize: 8.5, color: th.bodyText, lineHeight: 1.75, flex: 1 },
     // Signature
     sigSection:{ marginTop: 32, marginBottom: 20 },
     sigRow:    { flexDirection: "row", gap: 0, marginTop: 10 },
@@ -95,17 +121,37 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
     ftrBr:     { fontSize: 7, color: th.accent, fontFamily: B },
   });
 
+  // Renders markdown nodes as clean PDF elements
+  const RenderMarkdown = ({ nodes }: { nodes: MdNode[] }) => (
+    <View>
+      {nodes.map((node, i) => {
+        if (node.kind === "h2") {
+          return <Text key={i} style={s.mdH2}>{node.text}</Text>;
+        }
+        if (node.kind === "bullet") {
+          return (
+            <View key={i} style={s.mdBulletRow}>
+              <Text style={s.mdBulletDot}>•</Text>
+              <Text style={s.mdBulletTx}>{node.text}</Text>
+            </View>
+          );
+        }
+        return <Text key={i} style={s.mdPara}>{node.text}</Text>;
+      })}
+    </View>
+  );
+
   const Section = ({ label, text }: { label: string; text: string | null | undefined }) => {
     if (!text?.trim()) return null;
+    const nodes = parseMarkdown(text);
+    if (!nodes.length) return null;
     return (
       <View style={s.section} wrap={false}>
         <View style={s.secHdr}>
           <View style={s.secBar} />
           <Text style={s.secLbl}>{label}</Text>
         </View>
-        <View style={s.secBox}>
-          <Text style={s.secTx}>{text}</Text>
-        </View>
+        <RenderMarkdown nodes={nodes} />
       </View>
     );
   };
@@ -134,7 +180,7 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
             </View>
           </View>
 
-          {/* Meta row */}
+          {/* Meta row — Date + Valid Until only */}
           <View style={s.metaRow}>
             <View style={s.metaItem}>
               <Text style={s.metaLbl}>Date</Text>
@@ -146,12 +192,6 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
                 <Text style={s.metaVal}>{dt(proposal.validUntil)}</Text>
               </View>
             )}
-            <View style={s.metaItem}>
-              <Text style={s.metaLbl}>Status</Text>
-              <View style={[s.badge, { backgroundColor: st.bg, borderColor: st.bd }]}>
-                <Text style={[s.badgeTx, { color: st.tx }]}>{proposal.status}</Text>
-              </View>
-            </View>
           </View>
         </View>
 
@@ -163,20 +203,20 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
             <View>
               <Text style={s.cliLbl}>Prepared For</Text>
               <Text style={s.cliName}>{proposal.clientName ?? "Client"}</Text>
-              <Text style={s.cliDet}>{proposal.projectName}</Text>
+              {proposal.projectName && <Text style={s.cliDet}>{proposal.projectName}</Text>}
             </View>
             <View>
-              <Text style={s.cliLbl}>Project</Text>
+              <Text style={[s.cliLbl, { textAlign: "right" }]}>Project</Text>
               <Text style={[s.cliName, { textAlign: "right" }]}>{proposal.projectName}</Text>
             </View>
           </View>
 
-          {/* Text Sections */}
-          <Section label="Introduction" text={proposal.introText} />
-          <Section label="Scope of Work" text={proposal.scopeOfWork} />
-          <Section label="Deliverables" text={proposal.deliverables} />
-          <Section label="Timeline" text={proposal.timeline} />
-          <Section label="Payment Terms" text={proposal.paymentTerms} />
+          {/* Text Sections — markdown rendered cleanly */}
+          <Section label="Introduction"    text={proposal.introText} />
+          <Section label="Scope of Work"   text={proposal.scopeOfWork} />
+          <Section label="Deliverables"    text={proposal.deliverables} />
+          <Section label="Timeline"        text={proposal.timeline} />
+          <Section label="Payment Terms"   text={proposal.paymentTerms} />
           <Section label="Terms & Conditions" text={proposal.terms} />
 
           {/* Signature Block */}
@@ -185,7 +225,7 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
               <View style={s.secBar} />
               <Text style={s.secLbl}>Acceptance</Text>
             </View>
-            <Text style={[s.secTx, { marginBottom: 24 }]}>
+            <Text style={[s.mdPara, { marginBottom: 24 }]}>
               By signing below, you agree to the terms outlined in this proposal and authorize work to commence.
             </Text>
             <View style={s.sigRow}>
