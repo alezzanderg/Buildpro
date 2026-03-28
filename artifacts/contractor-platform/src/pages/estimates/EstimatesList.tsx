@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { useListEstimates, useCreateEstimate, useListClients } from "@workspace/api-client-react";
+import { useListEstimates, useCreateEstimate, useListClients, useCreateClient } from "@workspace/api-client-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { Link, useLocation } from "wouter";
-import { Plus, Search, Filter, Eye, FileText, ArrowRight } from "lucide-react";
+import { Plus, Search, Filter, Eye, FileText, ArrowRight, UserPlus, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -142,30 +142,65 @@ function CreateEstimateDialog({ onSuccess }: { onSuccess: (id: number) => void }
   const [open, setOpen] = useState(false);
   const [projectName, setProjectName] = useState("");
   const [clientId, setClientId] = useState<number | "">("");
-  
-  const { data: clients } = useListClients();
+
+  // Inline new-client form
+  const [showNewClient, setShowNewClient] = useState(false);
+  const [newClientName, setNewClientName] = useState("");
+  const [newClientEmail, setNewClientEmail] = useState("");
+  const [newClientPhone, setNewClientPhone] = useState("");
+
+  const { data: clients, refetch: refetchClients } = useListClients();
   const createMutation = useCreateEstimate();
+  const createClientMutation = useCreateClient();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!projectName) return;
-    
-    createMutation.mutate({
-      data: {
-        projectName,
-        clientId: clientId === "" ? null : clientId,
-        status: "draft"
+    createMutation.mutate(
+      { data: { projectName, clientId: clientId === "" ? null : clientId, status: "draft" } },
+      { onSuccess: (data) => { setOpen(false); onSuccess(data.id); } }
+    );
+  };
+
+  const handleCreateClient = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newClientName.trim()) return;
+    createClientMutation.mutate(
+      { data: { name: newClientName, email: newClientEmail || null, phone: newClientPhone || null } },
+      {
+        onSuccess: (newClient) => {
+          refetchClients();
+          setClientId(newClient.id);
+          setShowNewClient(false);
+          setNewClientName("");
+          setNewClientEmail("");
+          setNewClientPhone("");
+        },
       }
-    }, {
-      onSuccess: (data) => {
-        setOpen(false);
-        onSuccess(data.id);
-      }
-    });
+    );
+  };
+
+  const cancelNewClient = () => {
+    setShowNewClient(false);
+    setNewClientName("");
+    setNewClientEmail("");
+    setNewClientPhone("");
+  };
+
+  const handleOpenChange = (val: boolean) => {
+    setOpen(val);
+    if (!val) {
+      setProjectName("");
+      setClientId("");
+      setShowNewClient(false);
+      setNewClientName("");
+      setNewClientEmail("");
+      setNewClientPhone("");
+    }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_15px_rgba(250,204,21,0.2)]">
           <Plus className="w-4 h-4 mr-2" />
@@ -177,9 +212,11 @@ function CreateEstimateDialog({ onSuccess }: { onSuccess: (id: number) => void }
           <DialogTitle className="font-display">Create New Estimate</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
+
+          {/* Project name */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">Project Name *</label>
-            <Input 
+            <Input
               value={projectName}
               onChange={(e) => setProjectName(e.target.value)}
               placeholder="e.g. Kitchen Remodel - Smith Residence"
@@ -188,25 +225,104 @@ function CreateEstimateDialog({ onSuccess }: { onSuccess: (id: number) => void }
               required
             />
           </div>
+
+          {/* Client selector */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">Client (Optional)</label>
-            <select 
-              value={clientId}
-              onChange={(e) => setClientId(e.target.value ? Number(e.target.value) : "")}
-              className="w-full h-10 px-3 py-2 rounded-md bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
-            >
-              <option value="">Select a client...</option>
-              {clients?.map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
-              ))}
-            </select>
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium text-foreground">Cliente (Opcional)</label>
+              {!showNewClient && (
+                <button
+                  type="button"
+                  onClick={() => setShowNewClient(true)}
+                  className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+                >
+                  <UserPlus className="w-3.5 h-3.5" />
+                  Nuevo cliente
+                </button>
+              )}
+            </div>
+
+            {!showNewClient && (
+              <select
+                value={clientId}
+                onChange={(e) => setClientId(e.target.value ? Number(e.target.value) : "")}
+                className="w-full h-10 px-3 py-2 rounded-md bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground"
+              >
+                <option value="">Seleccionar cliente...</option>
+                {clients?.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            )}
+
+            {/* Inline new client form */}
+            {showNewClient && (
+              <div className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-3">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-semibold text-primary uppercase tracking-wide">Nuevo Cliente</span>
+                  <button
+                    type="button"
+                    onClick={cancelNewClient}
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-foreground">Nombre *</label>
+                  <Input
+                    value={newClientName}
+                    onChange={(e) => setNewClientName(e.target.value)}
+                    placeholder="Nombre completo o empresa"
+                    className="bg-background border-border h-9 text-sm"
+                    autoFocus
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-foreground">Email</label>
+                    <Input
+                      type="email"
+                      value={newClientEmail}
+                      onChange={(e) => setNewClientEmail(e.target.value)}
+                      placeholder="email@ejemplo.com"
+                      className="bg-background border-border h-9 text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-foreground">Teléfono</label>
+                    <Input
+                      type="tel"
+                      value={newClientPhone}
+                      onChange={(e) => setNewClientPhone(e.target.value)}
+                      placeholder="(555) 000-0000"
+                      className="bg-background border-border h-9 text-sm"
+                    />
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  size="sm"
+                  className="w-full bg-primary text-primary-foreground"
+                  disabled={!newClientName.trim() || createClientMutation.isPending}
+                  onClick={handleCreateClient}
+                >
+                  <Check className="w-3.5 h-3.5 mr-1.5" />
+                  {createClientMutation.isPending ? "Guardando..." : "Guardar y seleccionar"}
+                </Button>
+              </div>
+            )}
           </div>
-          <div className="pt-4 flex justify-end gap-3">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
-              Cancel
+
+          <div className="pt-4 flex justify-end gap-3 border-t border-border">
+            <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
+              Cancelar
             </Button>
             <Button type="submit" disabled={createMutation.isPending || !projectName}>
-              {createMutation.isPending ? "Creating..." : "Create & Continue"}
+              {createMutation.isPending ? "Creando..." : "Crear & Continuar"}
             </Button>
           </div>
         </form>
