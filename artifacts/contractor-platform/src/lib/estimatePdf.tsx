@@ -350,16 +350,6 @@ function PdfDoc({ e }: { e: Estimate }) {
           </View>
         </View>
 
-        {/* PROFIT MARGIN */}
-        {e.profitMargin > 0 && (
-          <View style={s.profitBadge}>
-            <View style={s.profitBox}>
-              <Text style={s.profitLabel}>Expected Profit Margin</Text>
-              <Text style={s.profitVal}>{fmtNum(e.profitMargin)}%</Text>
-            </View>
-          </View>
-        )}
-
         {/* NOTES */}
         {e.notes && (
           <View style={s.notesSection}>
