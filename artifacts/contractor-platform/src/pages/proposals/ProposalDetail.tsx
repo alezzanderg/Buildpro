@@ -378,6 +378,12 @@ export default function ProposalDetail() {
     scheduleAutoSave();
   }
 
+  function updateMany(fields: Partial<FormState>) {
+    setForm(prev => prev ? { ...prev, ...fields } : prev);
+    setDirty(true);
+    scheduleAutoSave();
+  }
+
   async function handleManualSave() {
     if (!form || !proposal) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
@@ -681,10 +687,10 @@ export default function ProposalDetail() {
                         <span className="text-xs text-muted-foreground">Warranty period:</span>
                         <Select
                           value={form.warrantyPeriod || "1 year"}
-                          onValueChange={v => {
-                            update("warrantyPeriod", v);
-                            update("warranty", makeWarrantyText(v));
-                          }}
+                          onValueChange={v => updateMany({
+                            warrantyPeriod: v,
+                            warranty: makeWarrantyText(v),
+                          })}
                         >
                           <SelectTrigger className="h-7 text-xs w-28 border-border">
                             <SelectValue />
