@@ -12,8 +12,17 @@ import {
   Menu,
   X,
   FileCheck,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@workspace/replit-auth-web";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -92,6 +101,13 @@ function SidebarContent({ location, onNavigate }: { location: string; onNavigate
 export function AppLayout({ children }: AppLayoutProps) {
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, logout } = useAuth();
+
+  const initials = user?.firstName && user?.lastName
+    ? `${user.firstName[0]}${user.lastName[0]}`
+    : user?.firstName
+      ? user.firstName.slice(0, 2)
+      : user?.username?.slice(0, 2).toUpperCase() ?? "U";
 
   return (
     <div className="flex h-screen bg-background overflow-hidden selection:bg-primary/20">
@@ -154,14 +170,45 @@ export function AppLayout({ children }: AppLayoutProps) {
 
           <div className="hidden md:flex flex-1" />
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
               <Bell className="w-5 h-5" />
               <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full border-2 border-background" />
             </Button>
-            <div className="w-8 h-8 rounded-full bg-secondary border border-border flex items-center justify-center overflow-hidden">
-              <span className="text-xs font-bold text-muted-foreground">AD</span>
-            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-secondary transition-colors outline-none">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
+                    {user?.profileImageUrl ? (
+                      <img src={user.profileImageUrl} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                    ) : (
+                      <span className="text-xs font-bold text-primary">{initials}</span>
+                    )}
+                  </div>
+                  <span className="hidden sm:block text-sm font-medium text-foreground max-w-[120px] truncate">
+                    {user?.firstName || user?.username || "User"}
+                  </span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <div className="px-3 py-2">
+                  <p className="text-sm font-semibold text-foreground truncate">
+                    {user?.firstName} {user?.lastName}
+                  </p>
+                  {user?.username && (
+                    <p className="text-xs text-muted-foreground truncate">@{user.username}</p>
+                  )}
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={logout}
+                  className="text-destructive focus:text-destructive cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
