@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { useGetProposal, useUpdateProposal } from "@/hooks/useProposals";
 import { useListClients } from "@workspace/api-client-react";
-import { downloadProposalPdf, ProposalPdfDocument, PDF_TEMPLATES, fetchLogoDataUrl } from "@/lib/proposalPdf";
+import { downloadProposalPdf, ProposalPdfDocument, PDF_TEMPLATES } from "@/lib/proposalPdf";
 import type { PdfTemplate } from "@/lib/proposalPdf";
 import { useCompanySettings } from "@/hooks/useCompanySettings";
 import type { ProposalDetail as ProposalDetailType } from "@/hooks/useProposals";
@@ -212,11 +212,10 @@ export default function ProposalDetail() {
   const updateProposal = useUpdateProposal();
   const { settings: companySettings } = useCompanySettings();
 
-  const [logoSrc, setLogoSrc] = useState<string | undefined>(undefined);
-  useEffect(() => {
-    if (!companySettings.logoUrl) { setLogoSrc(undefined); return; }
-    fetchLogoDataUrl(companySettings.logoUrl).then(setLogoSrc);
-  }, [companySettings.logoUrl]);
+  // Absolute URL — react-pdf's Image component fetches it directly in its worker
+  const logoSrc = companySettings.logoUrl
+    ? `${window.location.origin}/api/storage${companySettings.logoUrl}`
+    : undefined;
 
   const [form, setForm] = useState<FormState | null>(null);
   const [termsVisible, setTermsVisible] = useState<Record<string, boolean>>(BASIC_VISIBLE);

@@ -79,25 +79,6 @@ function extractHighlights(text: string | null | undefined, max = 5): string[] {
     .map((n) => n.text);
 }
 
-// ── Logo helpers ──────────────────────────────────────────────────────
-const BASE_URL = (typeof import.meta !== "undefined" ? import.meta.env.BASE_URL : "/").replace(/\/+$/, "");
-
-export async function fetchLogoDataUrl(objectPath: string): Promise<string | undefined> {
-  if (!objectPath) return undefined;
-  try {
-    const url = `${BASE_URL}/api/storage${objectPath}`;
-    const res = await fetch(url);
-    if (!res.ok) return undefined;
-    const blob = await res.blob();
-    return new Promise(resolve => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = () => resolve(undefined);
-      reader.readAsDataURL(blob);
-    });
-  } catch { return undefined; }
-}
-
 // ── Proposal PDF Component ────────────────────────────────────────────
 export function ProposalPdfDocument({
   proposal,
@@ -383,7 +364,9 @@ export function ProposalPdfDocument({
 
 export async function downloadProposalPdf(proposal: ProposalDetail, template: PdfTemplate = "classic") {
   const co = loadCompanySettings();
-  const logoSrc = co.logoUrl ? await fetchLogoDataUrl(co.logoUrl) : undefined;
+  const logoSrc = co.logoUrl
+    ? `${window.location.origin}/api/storage${co.logoUrl}`
+    : undefined;
   const blob = await pdf(<ProposalPdfDocument proposal={proposal} template={template} logoSrc={logoSrc} />).toBlob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

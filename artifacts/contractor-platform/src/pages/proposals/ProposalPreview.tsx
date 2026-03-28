@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { PDFViewer } from "@react-pdf/renderer";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Download, ArrowLeft, Loader2, Palette } from "lucide-react";
 import { useGetProposal } from "@/hooks/useProposals";
-import { ProposalPdfDocument, downloadProposalPdf, PDF_TEMPLATES, fetchLogoDataUrl } from "@/lib/proposalPdf";
+import { ProposalPdfDocument, downloadProposalPdf, PDF_TEMPLATES } from "@/lib/proposalPdf";
 import { useCompanySettings } from "@/hooks/useCompanySettings";
 import type { PdfTemplate } from "@/lib/proposalPdf";
 
@@ -14,7 +14,6 @@ export default function ProposalPreview() {
   const [, navigate] = useLocation();
   const [template, setTemplate] = useState<PdfTemplate>("classic");
   const [downloading, setDownloading] = useState(false);
-  const [logoSrc, setLogoSrc] = useState<string | undefined>(undefined);
 
   const { data: proposal, isLoading } = useGetProposal(parseInt(id ?? "0"), {
     enabled: !!id,
@@ -22,10 +21,10 @@ export default function ProposalPreview() {
 
   const { settings } = useCompanySettings();
 
-  useEffect(() => {
-    if (!settings.logoUrl) { setLogoSrc(undefined); return; }
-    fetchLogoDataUrl(settings.logoUrl).then(setLogoSrc);
-  }, [settings.logoUrl]);
+  // Pass absolute URL directly — react-pdf's Image component fetches it in its worker
+  const logoSrc = settings.logoUrl
+    ? `${window.location.origin}/api/storage${settings.logoUrl}`
+    : undefined;
 
   async function handleDownload() {
     if (!proposal) return;
@@ -79,7 +78,6 @@ export default function ProposalPreview() {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Template picker */}
           <div className="flex items-center gap-2">
             <Palette className="w-4 h-4 text-muted-foreground" />
             <Select value={template} onValueChange={v => setTemplate(v as PdfTemplate)}>
