@@ -18,6 +18,7 @@ import SuppliersList from "./pages/suppliers/SuppliersList";
 import Settings from "./pages/Settings";
 import ProposalsList from "./pages/proposals/ProposalsList";
 import ProposalDetail from "./pages/proposals/ProposalDetail";
+import ProposalPreview from "./pages/proposals/ProposalPreview";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ function AppRoutes() {
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/proposals" component={ProposalsList} />
+      <Route path="/proposals/:id/preview" component={ProposalPreview} />
       <Route path="/proposals/:id" component={ProposalDetail} />
       <Route path="/estimates" component={EstimatesList} />
       <Route path="/estimates/:id/print" component={EstimatePrint} />

@@ -16,6 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   ArrowLeft, Save, Download, Eye, EyeOff, ChevronDown,
   Send, Check, X, Loader2, Sparkles, Palette, ClipboardCopy, ChevronRight,
+  ExternalLink,
 } from "lucide-react";
 import { useGetProposal, useUpdateProposal } from "@/hooks/useProposals";
 import { useListClients } from "@workspace/api-client-react";
@@ -555,6 +556,17 @@ export default function ProposalDetail() {
             <Button variant={previewOpen ? "default" : "outline"} size="sm" className="gap-1.5" onClick={() => setPreviewOpen(v => !v)}>
               {previewOpen ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               <span className="hidden sm:inline">{previewOpen ? "Hide Preview" : "Preview"}</span>
+            </Button>
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={() => window.open(`${BASE}/proposals/${proposal.id}/preview`, "_blank")}
+              title="Open full PDF preview in a new tab"
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span className="hidden sm:inline">Open PDF</span>
             </Button>
 
             <Button size="sm" className="gap-1.5" onClick={handleManualSave} disabled={saving || !dirty}>
