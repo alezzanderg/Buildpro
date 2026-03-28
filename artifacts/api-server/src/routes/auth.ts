@@ -1,6 +1,7 @@
 import * as oidc from "openid-client";
 import { Router, type IRouter, type Request, type Response } from "express";
 import { db, usersTable } from "@workspace/db";
+import { eq } from "drizzle-orm";
 import {
   clearSession,
   getOidcConfig,
@@ -57,6 +58,7 @@ async function upsertUser(claims: Record<string, unknown>) {
     email: (claims.email as string) || null,
     firstName: (claims.first_name as string) || null,
     lastName: (claims.last_name as string) || null,
+    username: (claims.username as string) || null,
     profileImageUrl: (claims.profile_image_url || claims.picture) as
       | string
       | null,
@@ -76,8 +78,17 @@ async function upsertUser(claims: Record<string, unknown>) {
   return user;
 }
 
-router.get("/auth/user", (req: Request, res: Response) => {
-  res.json({ user: req.isAuthenticated() ? req.user : null });
+router.get("/auth/user", async (req: Request, res: Response) => {
+  if (!req.isAuthenticated()) {
+    res.json({ user: null });
+    return;
+  }
+  // Always pull the freshest data from DB so schema additions are reflected immediately
+  const [freshUser] = await db
+    .select()
+    .from(usersTable)
+    .where(eq(usersTable.id, req.user.id));
+  res.json({ user: freshUser ?? req.user });
 });
 
 router.get("/login", async (req: Request, res: Response) => {
@@ -165,6 +176,7 @@ router.get("/callback", async (req: Request, res: Response) => {
       email: dbUser.email,
       firstName: dbUser.firstName,
       lastName: dbUser.lastName,
+      username: dbUser.username,
       profileImageUrl: dbUser.profileImageUrl,
     },
     access_token: tokens.access_token,

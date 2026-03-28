@@ -177,36 +177,62 @@ export function AppLayout({ children }: AppLayoutProps) {
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 rounded-lg px-2 py-1.5 hover:bg-secondary transition-colors outline-none">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center">
+                <button className="flex items-center gap-2.5 rounded-xl px-2.5 py-1.5 hover:bg-secondary transition-colors outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-primary">
+                  {/* Avatar */}
+                  <div className="relative w-8 h-8 rounded-full overflow-hidden bg-primary/20 border-2 border-primary/30 flex items-center justify-center flex-shrink-0">
                     {user?.profileImageUrl ? (
-                      <img src={user.profileImageUrl} alt="Profile" className="w-full h-full rounded-full object-cover" />
+                      <img src={user.profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-xs font-bold text-primary">{initials}</span>
+                      <span className="text-xs font-bold text-primary leading-none">{initials}</span>
+                    )}
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-background" />
+                  </div>
+                  {/* Name */}
+                  <div className="hidden sm:flex flex-col items-start">
+                    <span className="text-sm font-semibold text-foreground leading-tight max-w-[110px] truncate">
+                      {user?.firstName
+                        ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ""}`
+                        : user?.username ?? "User"}
+                    </span>
+                    {user?.username && (
+                      <span className="text-[11px] text-muted-foreground leading-tight">@{user.username}</span>
                     )}
                   </div>
-                  <span className="hidden sm:block text-sm font-medium text-foreground max-w-[120px] truncate">
-                    {user?.firstName || user?.username || "User"}
-                  </span>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <div className="px-3 py-2">
-                  <p className="text-sm font-semibold text-foreground truncate">
-                    {user?.firstName} {user?.lastName}
-                  </p>
-                  {user?.username && (
-                    <p className="text-xs text-muted-foreground truncate">@{user.username}</p>
-                  )}
+
+              <DropdownMenuContent align="end" className="w-64 p-0 overflow-hidden">
+                {/* Profile Card */}
+                <div className="p-4 bg-secondary/30 border-b border-border flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full overflow-hidden bg-primary/20 border-2 border-primary/30 flex items-center justify-center flex-shrink-0">
+                    {user?.profileImageUrl ? (
+                      <img src={user.profileImageUrl} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-base font-bold text-primary">{initials}</span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">
+                      {user?.firstName || user?.username || "User"}{user?.lastName ? ` ${user.lastName}` : ""}
+                    </p>
+                    {user?.username && (
+                      <p className="text-xs text-muted-foreground truncate">@{user.username}</p>
+                    )}
+                    {user?.email && (
+                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    )}
+                  </div>
                 </div>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={logout}
-                  className="text-destructive focus:text-destructive cursor-pointer"
-                >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Log out
-                </DropdownMenuItem>
+                {/* Actions */}
+                <div className="p-1.5">
+                  <DropdownMenuItem
+                    onClick={logout}
+                    className="text-destructive focus:text-destructive focus:bg-destructive/10 cursor-pointer rounded-lg px-3 py-2"
+                  >
+                    <LogOut className="w-4 h-4 mr-2.5" />
+                    Log out
+                  </DropdownMenuItem>
+                </div>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
