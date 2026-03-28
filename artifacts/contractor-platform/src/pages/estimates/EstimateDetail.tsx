@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { downloadEstimatePdf, EstimatePdfDocument } from "@/lib/estimatePdf";
+import { downloadEstimatePdf, EstimatePdfDocument, PDF_TEMPLATES, type PdfTemplate } from "@/lib/estimatePdf";
 import { BlobProvider } from "@react-pdf/renderer";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
@@ -44,6 +44,7 @@ export default function EstimateDetail() {
   const [notes, setNotes] = useState("");
   const [pdfLoading, setPdfLoading] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [template, setTemplate] = useState<PdfTemplate>("classic");
 
   // Sync local state when estimate loads
   useEffect(() => {
@@ -83,13 +84,13 @@ export default function EstimateDetail() {
     if (!estimate) return;
     setPdfLoading(true);
     try {
-      await downloadEstimatePdf(estimate);
+      await downloadEstimatePdf(estimate, template);
     } catch (err) {
       toast({ title: "Error generating PDF", description: String(err), variant: "destructive" });
     } finally {
       setPdfLoading(false);
     }
-  }, [estimate, toast]);
+  }, [estimate, template, toast]);
 
   const handleConvertToInvoice = () => {
     convertMutation.mutate({ id: estimateId }, {
@@ -447,10 +448,27 @@ export default function EstimateDetail() {
                 {pdfLoading ? "Generando..." : "Descargar PDF"}
               </Button>
             </div>
+            {/* Template selector */}
+            <div className="flex gap-2 mt-3">
+              {PDF_TEMPLATES.map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setTemplate(t.id)}
+                  title={t.description}
+                  className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium border transition-all ${
+                    template === t.id
+                      ? "bg-primary text-primary-foreground border-primary shadow-[0_0_10px_rgba(250,204,21,0.25)]"
+                      : "bg-secondary/50 text-muted-foreground border-border hover:border-primary/40 hover:text-foreground"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
           </SheetHeader>
 
           <div className="flex-1 overflow-hidden bg-muted/30">
-            <BlobProvider document={<EstimatePdfDocument estimate={estimate} />}>
+            <BlobProvider document={<EstimatePdfDocument estimate={estimate} template={template} />}>
               {({ url, loading, error }) => {
                 if (loading) return (
                   <div className="h-full flex items-center justify-center">

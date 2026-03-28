@@ -9,8 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { BlobProvider } from "@react-pdf/renderer";
-import { EstimatePdfDocument } from "@/lib/estimatePdf";
-import { downloadEstimatePdf } from "@/lib/estimatePdf";
+import { EstimatePdfDocument, downloadEstimatePdf, PDF_TEMPLATES, type PdfTemplate } from "@/lib/estimatePdf";
 
 export default function EstimatesList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -148,6 +147,7 @@ function EstimatePreviewSheet({
   estimateId: number | null;
   onClose: () => void;
 }) {
+  const [template, setTemplate] = useState<PdfTemplate>("classic");
   const { data: estimate, isLoading } = useGetEstimate(
     estimateId ?? 0,
     { query: { enabled: estimateId !== null } }
@@ -176,12 +176,30 @@ function EstimatePreviewSheet({
                 size="sm"
                 variant="outline"
                 className="border-border mr-6"
-                onClick={() => downloadEstimatePdf(estimate)}
+                onClick={() => downloadEstimatePdf(estimate, template)}
               >
                 <Download className="w-3.5 h-3.5 mr-1.5" />
                 Descargar PDF
               </Button>
             )}
+          </div>
+
+          {/* Template selector */}
+          <div className="flex gap-2 mt-3">
+            {PDF_TEMPLATES.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setTemplate(t.id)}
+                title={t.description}
+                className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium border transition-all ${
+                  template === t.id
+                    ? "bg-primary text-primary-foreground border-primary shadow-[0_0_10px_rgba(250,204,21,0.25)]"
+                    : "bg-secondary/50 text-muted-foreground border-border hover:border-primary/40 hover:text-foreground"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
         </SheetHeader>
 
@@ -194,7 +212,7 @@ function EstimatePreviewSheet({
               </div>
             </div>
           ) : (
-            <BlobProvider document={<EstimatePdfDocument estimate={estimate} />}>
+            <BlobProvider document={<EstimatePdfDocument estimate={estimate} template={template} />}>
               {({ url, loading, error }) => {
                 if (loading) return (
                   <div className="h-full flex items-center justify-center">
