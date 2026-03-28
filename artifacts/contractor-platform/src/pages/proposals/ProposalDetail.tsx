@@ -37,6 +37,7 @@ import {
   Check,
   X,
   Loader2,
+  Sparkles,
 } from "lucide-react";
 import { useGetProposal, useUpdateProposal } from "@/hooks/useProposals";
 import { useListClients } from "@workspace/api-client-react";
@@ -107,7 +108,9 @@ export default function ProposalDetail() {
   const [pdfTemplate, setPdfTemplate] = useState<PdfTemplate>("classic");
   const [pdfOpen, setPdfOpen] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState(false);
+  const [enhancing, setEnhancing] = useState<Partial<Record<keyof FormState, boolean>>>({});
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
   // Initialize form from proposal data
   useEffect(() => {
@@ -172,6 +175,71 @@ export default function ProposalDetail() {
     if (saveTimer.current) clearTimeout(saveTimer.current);
     await saveNow(form, proposal);
     toast({ title: "Proposal saved" });
+  }
+
+  async function streamEnhance(key: keyof FormState) {
+    if (!form) return;
+    const currentText = form[key];
+    if (!currentText?.trim()) {
+      toast({ title: "Please write some text first before enhancing", variant: "destructive" });
+      return;
+    }
+    setEnhancing(prev => ({ ...prev, [key]: true }));
+    setForm(prev => prev ? { ...prev, [key]: "" } : prev);
+
+    try {
+      const res = await fetch(`${BASE}/api/proposals/enhance-text`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: currentText, section: key }),
+      });
+      if (!res.ok || !res.body) throw new Error("Failed to connect");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = "";
+      let buffer = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const json = line.slice(6);
+          try {
+            const parsed = JSON.parse(json);
+            if (parsed.done) break;
+            if (parsed.error) throw new Error(parsed.error);
+            if (parsed.content) {
+              accumulated += parsed.content;
+              const snapshot = accumulated;
+              setForm(prev => prev ? { ...prev, [key]: snapshot } : prev);
+            }
+          } catch { /* skip malformed */ }
+        }
+      }
+
+      setDirty(true);
+      if (accumulated) {
+        const final = accumulated;
+        if (saveTimer.current) clearTimeout(saveTimer.current);
+        saveTimer.current = setTimeout(() => {
+          setForm(prev => {
+            if (prev && proposal) saveNow(prev, proposal);
+            return prev;
+          });
+        }, 1500);
+        toast({ title: "Text enhanced by AI" });
+      }
+    } catch {
+      setForm(prev => prev ? { ...prev, [key]: currentText } : prev);
+      toast({ title: "AI enhance failed. Please try again.", variant: "destructive" });
+    } finally {
+      setEnhancing(prev => ({ ...prev, [key]: false }));
+    }
   }
 
   async function setStatus(status: string) {
@@ -325,22 +393,59 @@ export default function ProposalDetail() {
 
             {/* Text sections */}
             <div className="space-y-5">
-              {TEXT_SECTIONS.map(key => (
-                <div key={key} className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-0.5 h-4 rounded bg-primary" />
-                    <Label className="text-sm font-semibold uppercase tracking-wide text-foreground">
-                      {sectionLabel(key)}
-                    </Label>
+              {TEXT_SECTIONS.map(key => {
+                const isEnhancing = !!enhancing[key];
+                return (
+                  <div key={key} className="space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-0.5 h-4 rounded bg-primary" />
+                        <Label className="text-sm font-semibold uppercase tracking-wide text-foreground">
+                          {sectionLabel(key)}
+                        </Label>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={`gap-1.5 text-xs h-7 px-2.5 transition-all ${
+                          isEnhancing
+                            ? "text-primary animate-pulse cursor-not-allowed"
+                            : "text-muted-foreground hover:text-primary hover:bg-primary/10"
+                        }`}
+                        onClick={() => streamEnhance(key)}
+                        disabled={isEnhancing}
+                        title="Enhance with AI"
+                      >
+                        {isEnhancing ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Sparkles className="w-3.5 h-3.5" />
+                        )}
+                        {isEnhancing ? "Enhancing..." : "AI Enhance"}
+                      </Button>
+                    </div>
+                    <div className="relative">
+                      <Textarea
+                        value={form[key]}
+                        onChange={e => update(key, e.target.value)}
+                        placeholder={sectionPlaceholder(key)}
+                        disabled={isEnhancing}
+                        className={`min-h-[120px] resize-y font-sans text-sm leading-relaxed transition-all ${
+                          isEnhancing
+                            ? "bg-primary/5 border-primary/30 text-foreground/60 cursor-wait"
+                            : "bg-card border-border"
+                        }`}
+                      />
+                      {isEnhancing && (
+                        <div className="absolute bottom-3 right-3 flex items-center gap-1.5 text-xs text-primary bg-background/90 backdrop-blur-sm px-2 py-1 rounded-full border border-primary/20">
+                          <Sparkles className="w-3 h-3 animate-pulse" />
+                          AI writing...
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <Textarea
-                    value={form[key]}
-                    onChange={e => update(key, e.target.value)}
-                    placeholder={sectionPlaceholder(key)}
-                    className="min-h-[120px] resize-y bg-card border-border font-sans text-sm leading-relaxed"
-                  />
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Internal notes */}

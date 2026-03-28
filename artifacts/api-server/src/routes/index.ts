@@ -7,6 +7,7 @@ import estimatesRouter from "./estimates.js";
 import invoicesRouter from "./invoices.js";
 import dashboardRouter from "./dashboard.js";
 import proposalsRouter from "./proposals.js";
+import enhanceRouter from "./enhance.js";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use(estimatesRouter);
 router.use(invoicesRouter);
 router.use(dashboardRouter);
 router.use(proposalsRouter);
+router.use(enhanceRouter);
 
 export default router;
