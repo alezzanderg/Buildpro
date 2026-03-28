@@ -225,7 +225,7 @@ export default function ProposalDetail() {
         clientId:        proposal.clientId ? String(proposal.clientId) : "",
         status:          proposal.status ?? "draft",
         validUntil:      proposal.validUntil ?? "",
-        introText:       proposal.introText ?? "",
+        introText:       proposal.introText ?? "Thank you for the opportunity to provide this proposal for your project. Our goal is to deliver professional workmanship, clear communication, and an organized process from start to finish. This proposal outlines the scope of work, project assumptions, estimated timeline, payment terms, and conditions associated with the services requested.\n\nWe are committed to completing the work in a professional and timely manner while maintaining jobsite safety, cleanliness, and respect for the property. Any client-specific requests, selections, or special considerations should be documented and approved before work begins.",
         projectOverview: proposal.projectOverview ?? "",
         scopeOfWork:     proposal.scopeOfWork ?? "",
         exclusions:      proposal.exclusions ?? "",

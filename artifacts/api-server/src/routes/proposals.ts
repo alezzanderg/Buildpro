@@ -7,6 +7,7 @@ const router: IRouter = Router();
 
 // ── Default boilerplate text for new proposals ────────────────────────
 const BOILERPLATE_DEFAULTS = {
+  introText: "Thank you for the opportunity to provide this proposal for your project. Our goal is to deliver professional workmanship, clear communication, and an organized process from start to finish. This proposal outlines the scope of work, project assumptions, estimated timeline, payment terms, and conditions associated with the services requested.\n\nWe are committed to completing the work in a professional and timely manner while maintaining jobsite safety, cleanliness, and respect for the property. Any client-specific requests, selections, or special considerations should be documented and approved before work begins.",
   changeOrders: "Any work requested by the client that is outside the original scope of work must be documented and approved in writing before the additional work is performed. Change orders may affect pricing, material needs, and project duration.",
   siteConditions: "This proposal is based on visible conditions at the time of the estimate. We are not responsible for hidden or concealed conditions including structural deficiencies, water damage, code violations, pest damage, mold, rot, deteriorated framing, outdated utilities, or inaccessible systems discovered after work begins. Any such conditions will be brought to the client's attention and may require additional work and cost.",
   materials: "Materials will be installed as specified in the proposal or based on approved selections. If a specified material becomes unavailable, a comparable substitute may be recommended for client approval. Delays caused by backorders, discontinued products, or supplier issues may impact the project timeline.",
@@ -69,7 +70,7 @@ router.post("/proposals", async (req, res) => {
     clientId: clientId || null,
     projectName,
     status: status || "draft",
-    introText: introText || null,
+    introText: introText || BOILERPLATE_DEFAULTS.introText,
     projectOverview: projectOverview || null,
     scopeOfWork: scopeOfWork || null,
     exclusions: exclusions || null,
