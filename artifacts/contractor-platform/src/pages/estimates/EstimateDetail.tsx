@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRoute } from "wouter";
 import { 
   useGetEstimate, 
@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { downloadEstimatePdf } from "@/lib/estimatePdf";
 import {
   Dialog,
   DialogContent,
@@ -39,6 +40,7 @@ export default function EstimateDetail() {
   const [markupPercent, setMarkupPercent] = useState(0);
   const [taxPercent, setTaxPercent] = useState(0);
   const [notes, setNotes] = useState("");
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   // Sync local state when estimate loads
   useEffect(() => {
@@ -74,10 +76,17 @@ export default function EstimateDetail() {
     });
   };
 
-  const handlePrint = () => {
-    const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-    window.open(`${base}/estimates/${estimateId}/print`, "_blank");
-  };
+  const handlePrint = useCallback(async () => {
+    if (!estimate) return;
+    setPdfLoading(true);
+    try {
+      await downloadEstimatePdf(estimate);
+    } catch (err) {
+      toast({ title: "Error generating PDF", description: String(err), variant: "destructive" });
+    } finally {
+      setPdfLoading(false);
+    }
+  }, [estimate, toast]);
 
   const handleConvertToInvoice = () => {
     convertMutation.mutate({ id: estimateId }, {
@@ -119,8 +128,9 @@ export default function EstimateDetail() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" className="border-border bg-card" onClick={handlePrint}>
-              <Printer className="w-4 h-4 mr-2" /> Print PDF
+            <Button variant="outline" className="border-border bg-card" onClick={handlePrint} disabled={pdfLoading}>
+              <Printer className="w-4 h-4 mr-2" />
+              {pdfLoading ? "Generating PDF..." : "Download PDF"}
             </Button>
             
             {estimate.status === 'draft' && (
