@@ -21,15 +21,30 @@ export type ProposalDetail = {
   clientName: string | null;
   projectName: string;
   status: string;
-  introText: string | null;
-  scopeOfWork: string | null;
-  deliverables: string | null;
-  timeline: string | null;
-  paymentTerms: string | null;
-  terms: string | null;
-  notes: string | null;
   validUntil: string | null;
   createdAt: string;
+  // Client-specific sections
+  introText:       string | null;
+  projectOverview: string | null;
+  scopeOfWork:     string | null;
+  exclusions:      string | null;
+  allowances:      string | null;
+  deliverables:    string | null;
+  timeline:        string | null;
+  paymentTerms:    string | null;
+  // Standard boilerplate sections
+  changeOrders:    string | null;
+  siteConditions:  string | null;
+  materials:       string | null;
+  permits:         string | null;
+  access:          string | null;
+  cleanup:         string | null;
+  warranty:        string | null;
+  cancellation:    string | null;
+  liability:       string | null;
+  // Legacy / internal
+  terms:           string | null;
+  notes:           string | null;
 };
 
 export type CreateProposalInput = {

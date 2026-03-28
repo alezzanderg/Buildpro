@@ -1,0 +1,445 @@
+
+---
+
+# Universal Proposal Template
+
+Este template está hecho para adaptarse a construcción, remodelación, HVAC, pintura, electricidad, plomería, carpintería, roofing, flooring, landscaping, instalación, mantenimiento y servicios similares.
+
+```md
+--- PROPOSAL HEADER ---
+Proposal Number: {{proposal_number}}
+Date: {{date}}
+Valid Until: {{valid_until}}
+Prepared For: {{client_name}}
+Project Name: {{project_name}}
+Project Address: {{project_address}}
+Prepared By: {{company_name}}
+
+--- INTRODUCTION ---
+Thank you for the opportunity to provide this proposal for your project. Our goal is to deliver professional workmanship, clear communication, and an organized process from start to finish. This proposal outlines the scope of work, project assumptions, estimated timeline, payment terms, and conditions associated with the services requested.
+
+We are committed to completing the work in a professional and timely manner while maintaining jobsite safety, cleanliness, and respect for the property. Any client-specific requests, selections, or special considerations should be documented and approved before work begins.
+
+--- PROJECT OVERVIEW ---
+The purpose of this project is to perform the following services:
+{{project_overview}}
+
+This proposal is based on the information available at the time of estimation and may be adjusted if concealed conditions, site limitations, code-related issues, or client-requested changes are discovered during the course of the work.
+
+--- SCOPE OF WORK ---
+The work included in this proposal consists of the following:
+
+{{scope_of_work}}
+
+Examples of formatting:
+- Demolition & removal of existing materials as required
+- Installation of new materials, components, or finishes
+- Repairs, adjustments, replacements, or upgrades as specified
+- Testing, basic cleanup, and final walkthrough upon completion
+
+--- EXCLUSIONS ---
+Unless specifically listed in the Scope of Work, the following items are excluded from this proposal:
+
+{{exclusions}}
+
+Examples:
+- Permits, engineering, architectural drawings, or inspections
+- Structural modifications not visible at time of estimate
+- Hidden damage, mold remediation, asbestos, lead, or hazardous material handling
+- Utility company fees or third-party vendor costs
+- Owner-supplied material warranty or replacement labor unless otherwise stated
+
+--- ALLOWANCES / SELECTIONS ---
+The following items may require final owner selection, material confirmation, or allowance approval prior to installation:
+
+{{allowances_or_selections}}
+
+Examples:
+- Tile, paint color, fixtures, hardware, vanity, countertop, appliances
+- Brand/model selections
+- Finish upgrades or custom orders
+- Materials subject to availability
+
+--- DELIVERABLES ---
+Upon completion of the approved work, the project deliverables will include:
+
+{{deliverables}}
+
+Examples:
+- Completion of agreed installation, repair, renovation, or replacement work
+- Basic debris removal from active work areas
+- Functional testing of installed systems/components where applicable
+- Final walkthrough with client
+
+--- PROJECT TIMELINE ---
+Estimated start date: {{estimated_start_date}}
+Estimated completion date: {{estimated_completion_date}}
+
+Estimated project duration:
+{{timeline_breakdown}}
+
+Example:
+- Preparation / protection: 1 day
+- Demolition: 1–2 days
+- Rough work: 1–3 days
+- Installation / finishing: 2–5 days
+- Final touch-ups / walkthrough: 1 day
+
+Project duration is an estimate only and may be affected by site conditions, material availability, weather, inspection scheduling, client changes, or conditions beyond our control.
+
+--- PAYMENT TERMS ---
+The total proposed price for the work described above is: {{project_price}}
+
+Payment schedule:
+{{payment_schedule}}
+
+Example options:
+- 50% deposit due upon acceptance of proposal
+- 25% progress payment due at midpoint of project
+- 25% final payment due upon substantial completion
+
+or
+
+- 50% deposit due at signing
+- Remaining 50% due upon completion
+
+Additional payment terms:
+- Any additional work not included in this proposal must be approved as a change order and may result in additional charges.
+- Late payments may delay scheduling, material ordering, project progress, or final delivery.
+- Final payment is due upon substantial completion unless otherwise agreed in writing.
+
+--- CHANGE ORDERS ---
+Any work requested by the client that is outside the original scope of work must be documented and approved in writing before the additional work is performed. Change orders may affect pricing, material needs, and project duration.
+
+--- SITE CONDITIONS ---
+This proposal is based on visible conditions at the time of the estimate. We are not responsible for hidden or concealed conditions including, but not limited to, structural deficiencies, water damage, code violations, pest damage, mold, rot, deteriorated framing, outdated utilities, or inaccessible systems discovered after work begins. Any such conditions will be brought to the client's attention and may require additional work and cost.
+
+--- MATERIALS & SUBSTITUTIONS ---
+Materials will be installed as specified in the proposal or based on approved selections. If a specified material becomes unavailable, a comparable substitute may be recommended for client approval. Delays caused by backorders, discontinued products, or supplier issues may impact the project timeline.
+
+--- PERMITS, CODES & APPROVALS ---
+Unless explicitly stated otherwise, permits, plans, engineering, and municipal approvals are excluded from this proposal. Work will be performed in accordance with standard trade practices; however, any required upgrades related to code compliance discovered during the project may result in additional charges if not included in the original scope.
+
+--- ACCESS, UTILITIES & JOBSITE CONDITIONS ---
+The client agrees to provide reasonable access to the work area during normal working hours and to ensure that water, electricity, and any other necessary utilities are available unless otherwise agreed. The work area should be reasonably cleared of personal items, furniture, valuables, and obstacles prior to the start of work.
+
+While every effort will be made to protect surrounding areas, construction and service work may generate dust, vibration, noise, and limited disruption. We recommend that sensitive or valuable items be removed from adjacent spaces before work begins.
+
+--- CLEANUP & DISPOSAL ---
+Basic jobsite cleanup is included unless otherwise stated. This includes removal of construction debris generated by our work from active work areas. Deep cleaning, specialized disposal, hazardous waste handling, and off-site hauling beyond standard debris removal are excluded unless specifically listed in the proposal.
+
+--- WARRANTY / GUARANTEE ---
+We warrant our workmanship for a period of {{workmanship_warranty_period}} from the date of substantial completion, covering defects caused by installation or labor performed by our company under normal use conditions.
+
+This warranty does not cover:
+- Owner abuse, misuse, neglect, or lack of maintenance
+- Manufacturer defects in owner-supplied materials
+- Normal wear and tear
+- Damage caused by third parties, weather, structural movement, utility issues, or conditions outside our control
+- Repairs or modifications performed by others after our work is completed
+
+Manufacturer warranties, if applicable, are subject to the terms provided by the manufacturer.
+
+--- CANCELLATION / RESCHEDULING ---
+Deposits may be non-refundable once scheduling, material ordering, fabrication, or mobilization has begun. Requested postponements or rescheduling may affect project start dates and crew availability.
+
+If the client cancels the project after acceptance and before completion, the client agrees to pay for work performed, materials ordered, restocking fees, and any costs incurred up to the cancellation date.
+
+--- LIMITATION OF LIABILITY ---
+Our liability under this proposal shall be limited to the value of the contracted work actually performed. We shall not be liable for incidental, indirect, special, or consequential damages, delays outside our control, or pre-existing conditions not caused by our work.
+
+--- ACCEPTANCE ---
+By signing below, the client acknowledges that they have reviewed and accepted the scope of work, pricing, payment terms, exclusions, and conditions outlined in this proposal.
+
+Client Signature: _________________________
+Print Name: ______________________________
+Date: ___________________________________
+
+Authorized Contractor Signature: _________________________
+Print Name: ___________________________________________
+Date: _________________________________________________
+```
+
+---
+
+# Better version of your current sections
+
+Esto es una versión más profesional de los bloques que ya tienes, para que los uses como base editable:
+
+```md
+--- INTRODUCTION ---
+Thank you for the opportunity to provide this proposal for your project. We are committed to delivering quality workmanship, clear communication, and a smooth, well-organized process from start to finish. This proposal outlines the proposed scope of work, estimated timeline, payment terms, and project conditions based on the information available at the time of estimation.
+
+--- SCOPE OF WORK ---
+The work included in this proposal consists of the following:
+
+- **Demolition & Removal**
+  - Demolish and remove existing finishes, materials, and fixtures as required to complete the project.
+  - Remove and dispose of designated existing components scheduled for replacement.
+  - Inspect visible existing plumbing and related systems in affected work areas.
+
+- **Plumbing**
+  - Perform plumbing modifications and replacements as required for the new installation.
+  - Replace designated water supply piping where applicable.
+  - If deteriorated or failing piping is discovered, additional recommended upgrades may be presented to prevent future issues and avoid more extensive repairs later.
+
+- **Insulation**
+  - Remove existing insulation in affected areas as needed.
+  - Install new insulation where required as part of the project scope.
+
+- **Electrical**
+  - Relocate, adjust, or install electrical outlets, switches, or related components as needed for the approved layout.
+
+- **Wall, Finish & Fixture Work**
+  - Install moisture-resistant wallboard or approved wall finish materials as required.
+  - Install tile, fixtures, trim, and finish materials included in the project.
+  - Prepare and paint affected areas where applicable.
+
+--- DELIVERABLES ---
+Upon completion of the approved work, deliverables will include:
+
+- Completion of the agreed scope of work described in this proposal
+- Basic removal of construction debris generated by our work
+- Installation of specified materials, fixtures, and finishes
+- Final walkthrough of completed work area with client
+
+--- TIMELINE ---
+**Estimated Project Timeline**
+
+- Preparation and protection: {{x}} day(s)
+- Demolition: {{x}} day(s)
+- Rough plumbing / electrical: {{x}} day(s)
+- Installation / wall / finish work: {{x}} day(s)
+- Final touch-ups / cleanup: {{x}} day(s)
+
+*Total estimated duration: {{x}} working days, subject to site conditions, material availability, approval timing, and any approved change orders.*
+
+--- PAYMENT TERMS ---
+A deposit of {{deposit_amount_or_percentage}} is due upon acceptance of this proposal. The remaining balance shall be paid according to the agreed payment schedule outlined below:
+
+{{payment_schedule}}
+
+Final payment is due upon substantial completion of the approved work, unless otherwise stated in writing.
+
+--- TERMS & CONDITIONS ---
+All work will be performed in a professional manner consistent with standard industry practices. Reasonable efforts will be made to protect surrounding areas and maintain a safe, orderly work environment throughout the project.
+
+This proposal is based on visible conditions at the time of estimate. Any hidden damage, concealed deficiencies, code-related corrections, or unforeseen site conditions discovered after work begins may require additional labor, materials, time, and cost. Any work outside the original scope must be approved through a written change order before proceeding.
+```
+
+---
+
+# Recommended section structure for your platform
+
+Para que el usuario escriba fácil y el AI solo “enhance”, te recomiendo que tu sistema use siempre estas secciones fijas:
+
+```txt
+INTRODUCTION
+PROJECT OVERVIEW
+SCOPE OF WORK
+EXCLUSIONS
+ALLOWANCES / SELECTIONS
+DELIVERABLES
+TIMELINE
+PAYMENT TERMS
+CHANGE ORDERS
+SITE CONDITIONS
+MATERIALS & SUBSTITUTIONS
+PERMITS / CODES
+ACCESS / JOBSITE CONDITIONS
+CLEANUP & DISPOSAL
+WARRANTY
+CANCELLATION / RESCHEDULING
+LIMITATION OF LIABILITY
+ACCEPTANCE
+```
+
+Así el output siempre se ve más consistente, más premium y más legal/comercial.
+
+---
+
+# System prompt for “Enhance with AI”
+
+Este prompt está pensado para que el AI **no reescriba todo agresivamente**, no invente cosas, no cambie números, y solo haga una mejora controlada.
+
+```txt
+You are an AI writing assistant for a proposal-generation platform used by contractors and service businesses.
+
+Your task is to enhance user-written proposal content while preserving the user's original meaning, scope, pricing intent, structure, and business intent.
+
+Your role is to improve clarity, grammar, professionalism, tone, formatting consistency, and section quality without changing the factual meaning of the proposal.
+
+CORE RULES:
+1. Do not invent scope items, materials, pricing, legal commitments, warranties, exclusions, timelines, or deliverables that the user did not provide.
+2. Do not change quantities, dates, money amounts, percentages, project duration, or payment structure unless the user explicitly included them and they only need grammatical cleanup.
+3. Do not make the proposal sound overly legal, aggressive, or corporate. Keep the tone professional, clear, trustworthy, and contractor-friendly.
+4. Preserve the structure and section order unless a section is missing and a short placeholder-style professional improvement is clearly helpful.
+5. If the user's wording is rough, rewrite it into polished professional English while keeping the same meaning.
+6. If the text is already strong, make only light improvements.
+7. Do not add risky promises such as guaranteed completion dates, guaranteed outcomes, or blanket warranties unless already stated by the user.
+8. Do not add technical assumptions that were not written by the user.
+9. Do not remove important limitations, uncertainties, or conditions written by the user.
+10. Keep the output concise, polished, and ready to place into a professional proposal.
+
+STYLE GUIDELINES:
+- Use professional service-business language.
+- Keep wording specific, practical, and easy for clients to understand.
+- Avoid unnecessary repetition.
+- Prefer clean paragraphs and bullet points where appropriate.
+- Use section headings exactly as provided when possible.
+- Standardize inconsistent terminology when it improves readability.
+- Maintain neutral wording when site conditions or hidden conditions may affect the project.
+
+WHEN ENHANCING SECTIONS:
+- INTRODUCTION: make it welcoming, professional, and project-oriented.
+- SCOPE OF WORK: organize into clean bullets without adding new work.
+- DELIVERABLES: summarize what the client will receive based only on stated scope.
+- TIMELINE: present clearly and preserve the same durations.
+- PAYMENT TERMS: keep exact amounts/percentages/schedule unless only formatting is needed.
+- TERMS & CONDITIONS: improve wording for professionalism and clarity, but do not create legal clauses that were not implied or provided.
+
+IF INFORMATION IS MISSING:
+- Do not fabricate missing information.
+- Leave the section concise and neutral.
+- You may improve wording generically, but do not create facts.
+
+OUTPUT RULES:
+- Return only the enhanced proposal text.
+- Do not explain what you changed.
+- Do not add commentary, notes, or disclaimers outside the proposal.
+- Keep markdown-friendly formatting.
+```
+
+---
+
+# Stronger version if you want AI to add safe professional framing
+
+Si quieres que el AI tenga un poquito más de libertad, pero aún controlado, usa esta variante:
+
+```txt
+You are an AI proposal-writing assistant.
+
+Enhance the user's proposal text into a more professional, polished, client-facing version while preserving all factual meaning and business intent.
+
+You may:
+- improve grammar
+- improve sentence flow
+- organize bullets
+- strengthen introductions
+- standardize headings
+- make terms and conditions more professional when the user's intent is already clear
+
+You may not:
+- invent pricing
+- invent scope
+- invent warranties
+- invent exclusions
+- invent permits
+- invent legal obligations
+- change dates, percentages, quantities, or payment schedules
+- add promises not present in the original text
+
+Important behavior:
+- Keep the user's original structure whenever possible
+- Only make moderate edits
+- If the user's text is minimal, elevate tone without adding factual claims
+- If terms are vague, keep them neutral instead of specific
+- Make the output feel professional, realistic, and suitable for contractor proposals
+
+Return only the revised proposal content.
+```
+
+---
+
+# Best product logic for your platform
+
+Para que el botón funcione bien, la lógica ideal sería esta:
+
+El user escribe texto base
+el sistema guarda el texto original
+cuando hace click en enhance with ai, el AI:
+
+corrige grammar
+mejora tono
+organiza bullets
+uniforma headings
+mejora introducción
+suaviza o fortalece términos existentes
+pero no toca cantidades, precios ni scope real
+
+Eso evita que el usuario diga después: “el AI me cambió el proposal”.
+
+---
+
+# Recommendation for editable field strategy
+
+Yo te recomendaría que el sistema no trate todo como un solo bloque gigante. Mejor:
+
+`introduction`
+`projectOverview`
+`scopeOfWork`
+`deliverables`
+`timeline`
+`paymentTerms`
+`termsAndConditions`
+
+Y luego el botón pueda correr por:
+`enhanceSection(sectionName, sectionText)`
+
+Eso te da más control y evita que una mejora en términos cambie el alcance.
+
+---
+
+# Small fixes to your original text
+
+Hay algunos detalles de redacción que conviene corregir también en tu base:
+
+“profecional” → `professional`
+“user introdusca” → `user enters` o `user inputs`
+“teseado” → `desired`
+“alineamentos” → `guidelines`
+
+Y en tu contenido base:
+“Remove existing toilets” puede ser incorrecto si solo hay uno
+“recommend upgrading to new plumbing connections” suena mejor si queda más neutral y profesional
+“Terms & Conditions” ahora mismo está demasiado corto para una proposal reusable
+
+---
+
+# Suggested default terms & conditions block for all projects
+
+Este bloque te sirve mucho como base universal:
+
+```md
+--- TERMS & CONDITIONS ---
+All work will be performed in a professional manner consistent with standard industry practices. Reasonable efforts will be made to protect surrounding areas and maintain a safe, orderly jobsite throughout the project.
+
+This proposal is based on visible conditions at the time of estimation. Any hidden damage, concealed deficiencies, code-related corrections, or unforeseen site conditions discovered after work begins may require additional labor, materials, time, and cost.
+
+Any work outside the original approved scope must be authorized through a written change order before additional work is performed.
+
+Estimated schedules are subject to material availability, site readiness, weather conditions where applicable, inspection timing, and other factors beyond our control.
+
+Unless specifically listed in this proposal, permits, engineering, design services, hazardous material remediation, and owner-requested upgrades are excluded.
+
+Final material selections, colors, finishes, fixtures, and special-order items must be approved in a timely manner to avoid delays.
+
+Basic jobsite cleanup is included. Deep cleaning, specialized disposal, or removal of hazardous materials is not included unless specifically stated.
+
+Workmanship warranty, if provided, applies only to labor performed by our company and does not cover manufacturer defects, normal wear and tear, abuse, neglect, or work performed by others.
+```
+
+---
+
+# Best default payment terms block
+
+```md
+--- PAYMENT TERMS ---
+A deposit of {{deposit_percentage}} is due upon acceptance of this proposal in order to secure scheduling, material planning, and project commencement. The remaining balance shall be paid according to the approved payment schedule.
+
+Any additional work outside the original scope must be approved in writing and may result in additional charges.
+
+Final payment is due upon substantial completion of the approved work, unless otherwise stated in writing.
+```
+
+---

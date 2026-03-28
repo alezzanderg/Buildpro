@@ -20,60 +20,119 @@ RULES — follow these strictly:
 UNIVERSAL TEMPLATE PHILOSOPHY:
 - A great contractor proposal builds trust, sets clear expectations, and protects both parties.
 - Introduction: warm, professional, sets the relationship tone.
+- Project Overview: brief description of project purpose and context.
 - Scope of Work: detailed and specific — no ambiguity about what is included.
+- Exclusions: clearly lists what is NOT included to prevent misunderstandings.
+- Allowances / Selections: items requiring client decisions or approval.
 - Deliverables: what the client receives at the end of the project.
 - Timeline: realistic estimates with caveats about dependencies.
 - Payment Terms: clear schedule, change order policy, and late payment consequences.
-- Terms & Conditions: protects both parties — covers site conditions, hidden damage, permits, materials, warranty, cancellation, and liability.`;
+- Boilerplate sections (Change Orders, Site Conditions, Materials, Permits, Access, Cleanup, Warranty, Cancellation, Liability): protect both parties and set expectations.`;
 
 // ── Per-section user prompt instructions ─────────────────────────────
 const SECTION_INSTRUCTIONS: Record<string, string> = {
   introText: `Enhance this as the INTRODUCTION section of a contractor proposal. It should:
 - Open warmly but professionally
-- Briefly state the company's commitment to quality workmanship, communication, and organized process
+- Briefly state the company's commitment to quality workmanship, clear communication, and an organized process
 - Mention that the proposal covers scope, timeline, payment terms, and conditions
 - Adapt to the specific trade/project referenced in the text
 - 2–3 short paragraphs maximum`,
 
+  projectOverview: `Enhance this as the PROJECT OVERVIEW section. It should:
+- Briefly describe what the project is and its purpose/goal
+- Reference specific details from the text (room, system, property type, trade)
+- Note that the proposal is based on information available at time of estimation
+- 1–2 concise paragraphs — this is a summary, not the full scope`,
+
   scopeOfWork: `Enhance this as the SCOPE OF WORK section. It should:
 - List all work included clearly and specifically
 - Use bullet points grouped by trade phase (e.g., Demolition, Plumbing, Electrical, Finish Work)
-- Use confident, definitive language ("will install", "will replace", not "may" or "might")
+- Use committed, confident language ("will install", "will replace", not "may" or "might")
 - Convert any vague suggestions into clear, committed deliverables
-- Include inspection, testing, and basic cleanup language if relevant
-- Do NOT include items that should be in Exclusions`,
+- Include inspection, testing, and basic cleanup language if relevant`,
+
+  exclusions: `Enhance this as the EXCLUSIONS section. It should:
+- Clearly list what is NOT included in this proposal to prevent disputes
+- Use bullet points for each exclusion
+- Common exclusions: permits/engineering, structural work not visible at estimate, hidden damage/mold/hazardous materials, utility company fees, owner-supplied material warranty, work by other trades
+- Adapt to the specific trade mentioned in the input`,
+
+  allowances: `Enhance this as the ALLOWANCES / SELECTIONS section. It should:
+- List items requiring owner selection, approval, or material confirmation before work begins
+- Use bullet points
+- Examples: tile selection, paint colors, fixture models, hardware, appliances, countertop material
+- Note that installation may be delayed until selections are confirmed`,
 
   deliverables: `Enhance this as the DELIVERABLES section. It should:
-- List tangible outcomes the client will receive upon project completion
-- Cover: completion of all listed work, basic debris removal, functional testing where applicable, final walkthrough
+- List tangible outcomes the client receives upon project completion
+- Cover: completion of all listed work, debris removal from work areas, functional testing where applicable, final walkthrough
 - Be specific to the trade mentioned in the text
-- Use bullet points
-- Should complement (not repeat word-for-word) the Scope of Work`,
+- Use bullet points`,
 
   timeline: `Enhance this as the PROJECT TIMELINE section. It should:
 - Show a breakdown of project phases with estimated durations (e.g., "Demolition: 1–2 days")
-- Note the estimated start and completion if dates are provided
+- Note estimated start and completion dates if provided
 - Include a disclaimer that duration is an estimate subject to site conditions, material availability, inspections, weather, or client changes
 - Use bullet points for the phase breakdown`,
 
   paymentTerms: `Enhance this as the PAYMENT TERMS section. It should:
 - State the total project price clearly if provided
 - Show the payment schedule (deposit percentage, milestone payments, final payment)
-- Include: change order policy (any additional work requires written approval), late payment consequences (may delay scheduling or material ordering), final payment due upon substantial completion
+- Include: change order policy (additional work requires written approval), late payment consequences, final payment due upon substantial completion
 - Keep it clear, firm, and professional`,
 
-  terms: `Enhance this as the TERMS & CONDITIONS section. It should cover ALL of the following, adapted to the specific trade/project:
-- **Change Orders**: any out-of-scope work requires written approval and may affect price/timeline
-- **Site Conditions**: proposal based on visible conditions; hidden damage, mold, rot, structural issues, outdated utilities may require additional work and cost
-- **Materials & Substitutions**: materials as specified; if unavailable, comparable substitute subject to client approval
-- **Permits, Codes & Approvals**: unless explicitly stated, permits/plans/engineering are excluded; code-related upgrades discovered during work may incur additional cost
-- **Access & Utilities**: client provides reasonable access during working hours, water, electricity available as needed
-- **Cleanup & Disposal**: basic jobsite cleanup included; hazardous waste, deep cleaning, specialized disposal excluded unless stated
-- **Warranty / Guarantee**: workmanship warranty period (use what contractor specified or a reasonable standard period); does not cover owner abuse, manufacturer defects, normal wear, third-party damage
-- **Cancellation**: deposit may be non-refundable once materials ordered or scheduling begun; if cancelled, client pays for work performed plus costs incurred
-- **Limitation of Liability**: liability limited to value of contracted work performed; no liability for consequential or indirect damages
+  changeOrders: `Enhance this as the CHANGE ORDERS section. It should:
+- Explain that any out-of-scope work requires written approval before proceeding
+- Note that change orders may affect price, materials, and timeline
+- Keep it concise — 2–3 sentences maximum`,
 
-Format with bold headers (**Change Orders**, **Site Conditions**, etc.) followed by 1–3 sentences each.`,
+  siteConditions: `Enhance this as the SITE CONDITIONS section. It should:
+- State that the proposal is based on visible conditions at time of estimate
+- List specific hidden conditions that are not the company's responsibility (structural issues, mold, rot, outdated utilities, water damage, etc.)
+- Note that any discovered conditions will be communicated to the client and may require additional work
+- Be professional — not defensive`,
+
+  materials: `Enhance this as the MATERIALS & SUBSTITUTIONS section. It should:
+- State materials are installed per specs or approved selections
+- Address what happens when a material is unavailable (comparable substitute, client approval)
+- Note that backorders or supply issues may affect timeline
+- 2–3 sentences`,
+
+  permits: `Enhance this as the PERMITS, CODES & APPROVALS section. It should:
+- Clarify that permits/plans/engineering are excluded unless explicitly stated
+- Note work is performed per standard trade practices
+- Address code-related upgrades discovered during work (may incur additional cost)
+- 2–3 sentences`,
+
+  access: `Enhance this as the ACCESS, UTILITIES & JOBSITE CONDITIONS section. It should:
+- State the client's obligation to provide access during working hours
+- Mention water/electricity availability
+- Note that the work area should be cleared of personal items, furniture, valuables
+- Briefly mention that construction work generates dust/noise and sensitive items should be moved
+- 3–4 sentences`,
+
+  cleanup: `Enhance this as the CLEANUP & DISPOSAL section. It should:
+- Confirm basic jobsite cleanup is included
+- Define what's included: removal of construction debris from active work areas
+- Clearly exclude: deep cleaning, hazardous waste, specialized disposal, off-site hauling beyond standard debris
+- 2–3 sentences`,
+
+  warranty: `Enhance this as the WARRANTY / GUARANTEE section. It should:
+- State the workmanship warranty period (use what's in the text; if none, use "one (1) year")
+- Specify it covers defects from installation/labor under normal use
+- List what it does NOT cover: owner misuse/neglect, manufacturer defects, normal wear, third-party damage, modifications by others
+- Use a brief bullet list for exclusions`,
+
+  cancellation: `Enhance this as the CANCELLATION / RESCHEDULING section. It should:
+- State deposits may be non-refundable once materials ordered or scheduling begun
+- Address what client owes if they cancel mid-project (work performed + costs incurred)
+- Note that rescheduling requests may affect crew availability and start dates
+- 2–3 sentences`,
+
+  liability: `Enhance this as the LIMITATION OF LIABILITY section. It should:
+- State liability is limited to the value of contracted work actually performed
+- Exclude liability for incidental, indirect, consequential damages, or pre-existing conditions
+- Keep it concise and professional — 2 sentences maximum`,
 };
 
 router.post("/proposals/enhance-text", async (req, res) => {
