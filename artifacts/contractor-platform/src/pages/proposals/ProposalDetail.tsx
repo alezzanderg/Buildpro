@@ -57,6 +57,10 @@ const BASIC_VISIBLE: Record<string, boolean> = Object.fromEntries(TERMS_META.map
 
 const WARRANTY_PERIODS = ["30 days", "90 days", "6 months", "1 year", "2 years"];
 
+function makeWarrantyText(period: string): string {
+  return `Our workmanship is warranted for ${period} from the date of substantial completion against defects caused by our installation or labor under normal use conditions. This warranty does not cover owner misuse, manufacturer defects, normal wear and tear, or damage caused by third parties or conditions outside our control.`;
+}
+
 type FormState = {
   projectName: string; clientId: string; status: string; validUntil: string;
   introText: string; projectOverview: string; scopeOfWork: string;
@@ -677,7 +681,10 @@ export default function ProposalDetail() {
                         <span className="text-xs text-muted-foreground">Warranty period:</span>
                         <Select
                           value={form.warrantyPeriod || "1 year"}
-                          onValueChange={v => update("warrantyPeriod", v)}
+                          onValueChange={v => {
+                            update("warrantyPeriod", v);
+                            update("warranty", makeWarrantyText(v));
+                          }}
                         >
                           <SelectTrigger className="h-7 text-xs w-28 border-border">
                             <SelectValue />
