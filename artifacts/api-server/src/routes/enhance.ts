@@ -77,88 +77,137 @@ When improving bullet points, preserve the user's natural tone. Do not convert s
 
 Output only the revised scope text.`,
 
-  exclusions: `Enhance this as the EXCLUSIONS section. It should:
-- Clearly list what is NOT included in this proposal to prevent disputes
-- Use bullet points for each exclusion
-- Common exclusions: permits/engineering, structural work not visible at estimate, hidden damage/mold/hazardous materials, utility company fees, owner-supplied material warranty, work by other trades
-- Adapt to the specific trade mentioned in the input`,
+  exclusions: `You are improving the "Exclusions" section of a contractor proposal.
+Your task: improve wording clarity only. Do NOT add exclusion items that are not already present in the user's text.
+Rules:
+- Return only the revised content — no heading, no preamble
+- Do NOT add new exclusion items the user did not write
+- Preserve the exact list structure (bullets or paragraphs) the user used
+- Only polish sentence flow and professional tone
+Output only the revised text.`,
 
-  allowances: `Enhance this as the ALLOWANCES / SELECTIONS section. It should:
-- List items requiring owner selection, approval, or material confirmation before work begins
-- Use bullet points
-- Examples: tile selection, paint colors, fixture models, hardware, appliances, countertop material
-- Note that installation may be delayed until selections are confirmed`,
+  allowances: `You are improving the "Allowances & Selections" section of a contractor proposal.
+Your task: improve wording clarity only. Do NOT add selection items that are not already present.
+Rules:
+- Return only the revised content — no heading, no preamble
+- Do NOT add new items the user did not write
+- Preserve the user's list structure
+- Only polish sentence flow and wording
+Output only the revised text.`,
 
-  deliverables: `Enhance this as the DELIVERABLES section. It should:
-- List tangible outcomes the client receives upon project completion
-- Cover: completion of all listed work, debris removal from work areas, functional testing where applicable, final walkthrough
-- Be specific to the trade mentioned in the text
-- Use bullet points`,
+  deliverables: `You are improving the "Deliverables" section of a contractor proposal.
+Your task: improve wording only. Do NOT add deliverables beyond what the scope already covers.
+Rules:
+- Return only the revised content — no heading, no preamble
+- Do NOT add "functional testing and quality checks", "punch-list items", "closeout procedures", "final walk-through", or "operational verification" unless the user explicitly wrote them
+- Do NOT expand deliverables into a quality assurance or inspection protocol
+- Each deliverable should directly correspond to work stated in the input
+- Keep bullets concise — one clear outcome per bullet
+- Do NOT add deliverables the user did not write
+Output only the revised text.`,
 
-  timeline: `Enhance this as the PROJECT TIMELINE section. It should:
-- Show a breakdown of project phases with estimated durations (e.g., "Demolition: 1–2 days")
-- Note estimated start and completion dates if provided
-- Include a disclaimer that duration is an estimate subject to site conditions, material availability, inspections, weather, or client changes
-- Use bullet points for the phase breakdown`,
+  timeline: `You are improving the "Timeline" section of a contractor proposal.
+Your task: improve wording and formatting only. Do NOT add phases the user did not write.
+Rules:
+- Return only the revised content — no heading, no preamble
+- Preserve the exact phases and durations the user provided
+- Do NOT add phases, steps, or disclaimer language the user did not write
+- If a disclaimer about estimates exists, you may polish it — but do not add one from scratch
+- Use clean bullet format: "Phase name: X–Y days"
+Output only the revised text.`,
 
-  paymentTerms: `Enhance this as the PAYMENT TERMS section. It should:
-- State the total project price clearly if provided
-- Show the payment schedule (deposit percentage, milestone payments, final payment)
-- Include: change order policy (additional work requires written approval), late payment consequences, final payment due upon substantial completion
-- Keep it clear, firm, and professional`,
+  paymentTerms: `You are improving the "Payment Terms" section of a contractor proposal.
+Your task: improve wording only. Do NOT add payment conditions the user did not write.
+Rules:
+- Return only the revised content — no heading, no preamble
+- Preserve the exact payment structure the user wrote (deposit %, milestones, final payment amounts)
+- Do NOT add late payment clauses unless the user wrote them
+- Do NOT add "final payment must be received prior to final closeout" or similar closeout language unless written
+- Do NOT add change order policy language unless the user included it
+- Only polish the wording and professional tone of what is already there
+Output only the revised text.`,
 
-  changeOrders: `Enhance this as the CHANGE ORDERS section. It should:
-- Explain that any out-of-scope work requires written approval before proceeding
-- Note that change orders may affect price, materials, and timeline
-- Keep it concise — 2–3 sentences maximum`,
+  changeOrders: `You are lightly polishing the "Change Orders" clause of a contractor proposal.
+Your task: improve clarity and professional tone only. Do NOT add new clauses.
+Rules:
+- Return only the revised content — no heading, no preamble
+- Preserve the exact meaning and scope of the original text
+- Do NOT add new conditions, consequences, or legal protections not already present
+- Keep it concise — 2–3 sentences
+Output only the revised text.`,
 
-  siteConditions: `Enhance this as the SITE CONDITIONS section. It should:
-- State that the proposal is based on visible conditions at time of estimate
-- List specific hidden conditions that are not the company's responsibility (structural issues, mold, rot, outdated utilities, water damage, etc.)
-- Note that any discovered conditions will be communicated to the client and may require additional work
-- Be professional — not defensive`,
+  siteConditions: `You are lightly polishing the "Site Conditions" clause of a contractor proposal.
+Your task: improve clarity and professional tone only. Do NOT add new clauses.
+Rules:
+- Return only the revised content — no heading, no preamble
+- Preserve the exact meaning, scope, and list of conditions from the original
+- Do NOT add new hidden conditions or liability language not already present
+- Keep the same length — do not expand
+Output only the revised text.`,
 
-  materials: `Enhance this as the MATERIALS & SUBSTITUTIONS section. It should:
-- State materials are installed per specs or approved selections
-- Address what happens when a material is unavailable (comparable substitute, client approval)
-- Note that backorders or supply issues may affect timeline
-- 2–3 sentences`,
+  materials: `You are lightly polishing the "Materials & Substitutions" clause of a contractor proposal.
+Your task: improve clarity only. Do NOT add new clauses.
+Rules:
+- Return only the revised content — no heading, no preamble
+- Preserve exact meaning — same conditions, same coverage
+- Do NOT add warranty, supply, or lead-time language not already present
+- 2–3 sentences
+Output only the revised text.`,
 
-  permits: `Enhance this as the PERMITS, CODES & APPROVALS section. It should:
-- Clarify that permits/plans/engineering are excluded unless explicitly stated
-- Note work is performed per standard trade practices
-- Address code-related upgrades discovered during work (may incur additional cost)
-- 2–3 sentences`,
+  permits: `You are lightly polishing the "Permits, Codes & Approvals" clause of a contractor proposal.
+Your task: improve clarity only. Do NOT add new clauses.
+Rules:
+- Return only the revised content — no heading, no preamble
+- Preserve exact meaning — same exclusions, same conditions
+- Do NOT add compliance, inspection, or upgrade language not already present
+- 2–3 sentences
+Output only the revised text.`,
 
-  access: `Enhance this as the ACCESS, UTILITIES & JOBSITE CONDITIONS section. It should:
-- State the client's obligation to provide access during working hours
-- Mention water/electricity availability
-- Note that the work area should be cleared of personal items, furniture, valuables
-- Briefly mention that construction work generates dust/noise and sensitive items should be moved
-- 3–4 sentences`,
+  access: `You are lightly polishing the "Access & Jobsite Conditions" clause of a contractor proposal.
+Your task: improve clarity only. Do NOT add new clauses.
+Rules:
+- Return only the revised content — no heading, no preamble
+- Preserve exact meaning — same obligations, same conditions
+- Do NOT add new access requirements or liability language not already present
+- Keep the same length
+Output only the revised text.`,
 
-  cleanup: `Enhance this as the CLEANUP & DISPOSAL section. It should:
-- Confirm basic jobsite cleanup is included
-- Define what's included: removal of construction debris from active work areas
-- Clearly exclude: deep cleaning, hazardous waste, specialized disposal, off-site hauling beyond standard debris
-- 2–3 sentences`,
+  cleanup: `You are lightly polishing the "Cleanup & Disposal" clause of a contractor proposal.
+Your task: improve clarity only. Do NOT add new clauses.
+Rules:
+- Return only the revised content — no heading, no preamble
+- Preserve exact meaning — same inclusions and exclusions
+- Do NOT add disposal categories or conditions not already present
+- 2–3 sentences
+Output only the revised text.`,
 
-  warranty: `Enhance this as the WARRANTY / GUARANTEE section. It should:
-- State the workmanship warranty period (use what's in the text; if none, use "one (1) year")
-- Specify it covers defects from installation/labor under normal use
-- List what it does NOT cover: owner misuse/neglect, manufacturer defects, normal wear, third-party damage, modifications by others
-- Use a brief bullet list for exclusions`,
+  warranty: `You are lightly polishing the "Warranty / Guarantee" clause of a contractor proposal.
+Your task: improve clarity only. Do NOT add new warranty terms.
+Rules:
+- Return only the revised content — no heading, no preamble
+- Preserve the EXACT warranty period stated in the original — do not change or invent a period
+- Preserve the exact coverage and exclusions already listed
+- Do NOT add new exclusions, conditions, or coverage not already present
+- Do NOT add bullet lists if the original was written as paragraphs
+Output only the revised text.`,
 
-  cancellation: `Enhance this as the CANCELLATION / RESCHEDULING section. It should:
-- State deposits may be non-refundable once materials ordered or scheduling begun
-- Address what client owes if they cancel mid-project (work performed + costs incurred)
-- Note that rescheduling requests may affect crew availability and start dates
-- 2–3 sentences`,
+  cancellation: `You are lightly polishing the "Cancellation / Rescheduling" clause of a contractor proposal.
+Your task: improve clarity only. Do NOT add new clauses.
+Rules:
+- Return only the revised content — no heading, no preamble
+- Preserve exact meaning — same conditions, same consequences
+- Do NOT add new cancellation terms, fees, or legal language not already present
+- 2–3 sentences
+Output only the revised text.`,
 
-  liability: `Enhance this as the LIMITATION OF LIABILITY section. It should:
-- State liability is limited to the value of contracted work actually performed
-- Exclude liability for incidental, indirect, consequential damages, or pre-existing conditions
-- Keep it concise and professional — 2 sentences maximum`,
+  liability: `You are lightly polishing the "Limitation of Liability" clause of a contractor proposal.
+Your task: improve clarity only. Do NOT add new clauses.
+Rules:
+- Return only the revised content — no heading, no preamble
+- Preserve exact meaning — same liability limit, same exclusions
+- Do NOT add new damage categories or legal conditions not already present
+- Maximum 2 sentences
+Output only the revised text.`,
 };
 
 router.post("/proposals/enhance-text", async (req, res) => {

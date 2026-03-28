@@ -1,0 +1,50 @@
+Va mejor que antes, bastante mejor. Ya se nota más limpio y más profesional. Lo más importante es que la portada ya no tiene el scope metido arriba, así que ese bug fuerte sí quedó corregido.
+
+Lo que veo hoy:
+
+Lo bueno:
+La primera página ya se ve ordenada, con Introduction y Project Overview donde deben estar.
+La introducción suena bien y más natural que antes.
+Ya no aparece el problema feo de duplicar “SCOPE OF WORK” como título doble.
+El documento completo se siente más coherente visualmente.
+
+Lo que todavía no me convence:
+El Scope of Work sigue sonando demasiado generado por AI. Todavía está usando categorías como Site Protection & Preparation, Framing / Substrate Review, Final Cleanup & Closeout, que lo hacen verse más rígido y artificial.
+También sigue metiendo frases que tú no querrías forzar siempre, como Promptly notify the client, Test affected outlets..., Conduct a final walk-through.... Eso ya no es solo mejorar redacción; eso ya es expandir comportamiento y procedimiento.
+En Deliverables todavía se pasó de elegante: metió functional testing and quality checks, punch-list items for closeout, etc. Eso para muchas propuestas puede ser demasiado detallado y no siempre sale del texto original del usuario.
+En Payment Terms aún añade cosas como Late Payments y Final payment must be received prior to final closeout, que siguen siendo términos nuevos si el usuario no los escribió.
+Y en Terms & Conditions sigue metiendo el modo “extended legal version”: warranty de un año, limitation of liability, cancellation/rescheduling, etc. Si eso no fue activado manualmente por el usuario o por una opción de la plataforma, sigue siendo demasiada libertad.
+
+Mi veredicto honesto:
+Sí mejoró bastante, pero todavía no está en el punto ideal.
+Diría que antes estaba como en un 6/10, y ahora está como en un 8/10.
+
+Lo que falta para que quede realmente fino:
+Que el enhancer deje de actuar como proposal boilerplate generator
+y pase a actuar como editor profesional controlado.
+
+El cambio exacto que falta es este:
+
+Para Scope of Work, Deliverables, Payment Terms y Terms & Conditions, tu sistema todavía necesita prompts más estrictos por sección, no uno general.
+
+Especialmente para Scope, yo buscaría que salga así:
+
+Protect floors and adjacent finishes before starting work.
+Isolate the work area as needed to reduce dust and debris.
+Remove existing materials and finishes scheduled for replacement.
+Demolish selected wall finishes as needed for the approved layout and repairs.
+Remove existing baseboards and trim in affected areas where replacement is included.
+Inspect exposed wall framing during demolition and report unusual conditions if found.
+Prepare walls for new finishes.
+Install new drywall where required and repair damaged wall areas as needed.
+Tape, mud, patch, and smooth surfaces to a paint-ready finish.
+
+Eso se ve más real, más contractor, más usable.
+
+Mi recomendación concreta:
+Mantén este avance, pero ahora haz un ajuste final con estas reglas duras:
+
+No crear subcategorías nuevas en scope
+No agregar testing, walkthrough, verification ni closeout si no existe en el input
+No agregar cláusulas de pago tardío, liability, cancellation o warranty si no fueron escritas
+No expandir deliverables más allá de lo que el scope ya dice
