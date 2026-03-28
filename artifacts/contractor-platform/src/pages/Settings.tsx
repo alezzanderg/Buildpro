@@ -72,7 +72,6 @@ function ProfileTab() {
             ) : (
               <span className="text-2xl font-bold text-primary">{initials}</span>
             )}
-            <span className="absolute bottom-1 right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background" />
           </div>
           <div>
             <p className="text-lg font-display font-semibold text-foreground">

@@ -185,7 +185,6 @@ export function AppLayout({ children }: AppLayoutProps) {
                     ) : (
                       <span className="text-xs font-bold text-primary leading-none">{initials}</span>
                     )}
-                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-background" />
                   </div>
                   {/* Name */}
                   <div className="hidden sm:flex flex-col items-start">
