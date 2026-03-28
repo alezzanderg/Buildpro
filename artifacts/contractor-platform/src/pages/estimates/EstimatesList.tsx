@@ -3,7 +3,7 @@ import { useListEstimates, useCreateEstimate, useListClients } from "@workspace/
 import { AppLayout } from "@/components/layout/AppLayout";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { Link, useLocation } from "wouter";
-import { Plus, Search, Filter, MoreHorizontal, FileText, ArrowRight } from "lucide-react";
+import { Plus, Search, Filter, Eye, FileText, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -103,8 +103,8 @@ export default function EstimatesList() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <Link href={`/estimates/${est.id}`}>
-                          <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity text-primary hover:text-primary hover:bg-primary/10">
-                            View <ArrowRight className="w-4 h-4 ml-2" />
+                          <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10">
+                            Ver <ArrowRight className="w-4 h-4 ml-2" />
                           </Button>
                         </Link>
                       </td>
