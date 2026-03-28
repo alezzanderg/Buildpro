@@ -21,6 +21,7 @@ import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { downloadEstimatePdf, EstimatePdfDocument, PDF_TEMPLATES, type PdfTemplate } from "@/lib/estimatePdf";
 import { BlobProvider } from "@react-pdf/renderer";
+import { useCompanySettings, useLogoDataUrl } from "@/hooks/useCompanySettings";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
   Dialog,
@@ -38,6 +39,8 @@ export default function EstimateDetail() {
   const updateMutation = useUpdateEstimate();
   const convertMutation = useConvertEstimateToInvoice();
   const { toast } = useToast();
+  const { settings: companySettings } = useCompanySettings();
+  const logoSrc = useLogoDataUrl(companySettings.logoUrl);
 
   const [markupPercent, setMarkupPercent] = useState(0);
   const [taxPercent, setTaxPercent] = useState(0);
@@ -468,7 +471,7 @@ export default function EstimateDetail() {
           </SheetHeader>
 
           <div className="flex-1 overflow-hidden bg-muted/30">
-            <BlobProvider document={<EstimatePdfDocument estimate={estimate} template={template} />}>
+            <BlobProvider document={<EstimatePdfDocument estimate={estimate} template={template} logoSrc={logoSrc ?? undefined} />}>
               {({ url, loading, error }) => {
                 if (loading) return (
                   <div className="h-full flex items-center justify-center">

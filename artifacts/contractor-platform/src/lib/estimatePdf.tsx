@@ -5,9 +5,10 @@ import {
   View,
   StyleSheet,
   pdf,
+  Image,
 } from "@react-pdf/renderer";
 import type { EstimateDetail } from "@workspace/api-client-react";
-import { loadCompanySettings } from "@/hooks/useCompanySettings";
+import { loadCompanySettings, fetchLogoDataUrl } from "@/hooks/useCompanySettings";
 
 // ── Fonts ──────────────────────────────────────────────────────────────
 const R  = "Helvetica";
@@ -57,6 +58,7 @@ const s1 = StyleSheet.create({
   logoRow: { flexDirection: "row", alignItems: "center", marginBottom: 6 },
   logoBox: { width: 32, height: 32, backgroundColor: "#0F172A", borderRadius: 6, alignItems: "center", justifyContent: "center", marginRight: 9 },
   logoLtr: { color: "#F59E0B", fontSize: 18, fontFamily: B },
+  logoImg: { width: 40, height: 40, marginRight: 10, objectFit: "contain" },
   coName: { fontSize: 19, fontFamily: B, color: "#0F172A" },
   coDet: { fontSize: 7.5, color: "#64748B", marginTop: 2 },
   docLbl: { fontSize: 27, fontFamily: B, color: "#CBD5E1", letterSpacing: 4, textAlign: "right", marginBottom: 10 },
@@ -95,7 +97,7 @@ const s1 = StyleSheet.create({
   ftrTx: { fontSize: 7, color: "#94A3B8" }, ftrBr: { fontSize: 7, color: "#F59E0B", fontFamily: B },
 });
 
-function Classic({ e }: { e: E }) {
+function Classic({ e, logoSrc }: { e: E; logoSrc?: string }) {
   const co = loadCompanySettings();
   const st = sc(e.status);
   const items = e.lineItems ?? [];
@@ -105,7 +107,10 @@ function Classic({ e }: { e: E }) {
         <View style={s1.hdr}>
           <View>
             <View style={s1.logoRow}>
-              <View style={s1.logoBox}><Text style={s1.logoLtr}>{co.name.charAt(0).toUpperCase()}</Text></View>
+              {logoSrc
+                ? <Image src={logoSrc} style={s1.logoImg} />
+                : <View style={s1.logoBox}><Text style={s1.logoLtr}>{co.name.charAt(0).toUpperCase()}</Text></View>
+              }
               <Text style={s1.coName}>{co.name}</Text>
             </View>
             {(co.address || co.city) && <Text style={s1.coDet}>{co.address}{co.city ? `, ${co.city}` : ""}{co.state ? `, ${co.state}` : ""}{co.zip ? ` ${co.zip}` : ""}</Text>}
@@ -179,6 +184,7 @@ const s2 = StyleSheet.create({
   stripe: { width: 5, backgroundColor: "#F59E0B", position: "absolute", top: 0, left: 0, bottom: 0 },
   body: { paddingTop: 40, paddingBottom: 55, paddingLeft: 52, paddingRight: 48 },
   hdr: { flexDirection: "row", justifyContent: "space-between", marginBottom: 30 },
+  logoImg: { width: 40, height: 40, marginBottom: 6, objectFit: "contain" },
   coName: { fontSize: 20, fontFamily: B, color: "#111827", marginBottom: 4 },
   coDet: { fontSize: 7.5, color: "#6B7280", marginTop: 2 },
   docLbl: { fontSize: 9, fontFamily: B, color: "#F59E0B", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8, textAlign: "right" },
@@ -214,7 +220,7 @@ const s2 = StyleSheet.create({
   ftrTx: { fontSize: 7, color: "#9CA3AF" }, ftrBr: { fontSize: 7, color: "#F59E0B", fontFamily: B },
 });
 
-function Modern({ e }: { e: E }) {
+function Modern({ e, logoSrc }: { e: E; logoSrc?: string }) {
   const co = loadCompanySettings();
   const items = e.lineItems ?? [];
   return (
@@ -224,6 +230,7 @@ function Modern({ e }: { e: E }) {
         <View style={s2.body}>
           <View style={s2.hdr}>
             <View>
+              {logoSrc && <Image src={logoSrc} style={s2.logoImg} />}
               <Text style={s2.coName}>{co.name}</Text>
               {(co.address || co.city) && <Text style={s2.coDet}>{co.address}{co.city ? `, ${co.city}` : ""}{co.state ? `, ${co.state}` : ""}{co.zip ? ` ${co.zip}` : ""}</Text>}
               {(co.phone || co.email) && <Text style={s2.coDet}>{co.phone}{co.phone && co.email ? "  ·  " : ""}{co.email}</Text>}
@@ -290,6 +297,7 @@ function Modern({ e }: { e: E }) {
 const s3 = StyleSheet.create({
   page: { fontFamily: R, fontSize: 9, color: "#1E293B", backgroundColor: "#FFFFFF", paddingBottom: 60 },
   banner: { backgroundColor: "#0F172A", paddingTop: 30, paddingBottom: 30, paddingHorizontal: 48, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
+  logoImg: { width: 40, height: 40, marginBottom: 6, objectFit: "contain" },
   coName: { fontSize: 22, fontFamily: B, color: "#FFFFFF", marginBottom: 5 },
   coDet: { fontSize: 7.5, color: "#94A3B8", marginTop: 2 },
   docLbl: { fontSize: 28, fontFamily: B, color: "#F59E0B", letterSpacing: 3, marginBottom: 8 },
@@ -326,14 +334,14 @@ const s3 = StyleSheet.create({
   ftrTx: { fontSize: 7, color: "#94A3B8" }, ftrBr: { fontSize: 7, color: "#F59E0B", fontFamily: B },
 });
 
-function Executive({ e }: { e: E }) {
+function Executive({ e, logoSrc }: { e: E; logoSrc?: string }) {
   const co = loadCompanySettings();
   const items = e.lineItems ?? [];
   return (
     <Document title={`Estimate ${e.estimateNumber}`} author={co.name}>
       <Page size="LETTER" style={s3.page}>
         <View style={s3.banner} fixed>
-          <View><Text style={s3.coName}>{co.name}</Text>{(co.address || co.city) && <Text style={s3.coDet}>{co.address}{co.city ? `, ${co.city}` : ""}{co.state ? `, ${co.state}` : ""}{co.zip ? ` ${co.zip}` : ""}</Text>}{(co.phone || co.email) && <Text style={s3.coDet}>{co.phone}{co.phone && co.email ? "  ·  " : ""}{co.email}</Text>}{co.license && <Text style={s3.coDet}>License #: {co.license}</Text>}</View>
+          <View>{logoSrc && <Image src={logoSrc} style={s3.logoImg} />}<Text style={s3.coName}>{co.name}</Text>{(co.address || co.city) && <Text style={s3.coDet}>{co.address}{co.city ? `, ${co.city}` : ""}{co.state ? `, ${co.state}` : ""}{co.zip ? ` ${co.zip}` : ""}</Text>}{(co.phone || co.email) && <Text style={s3.coDet}>{co.phone}{co.phone && co.email ? "  ·  " : ""}{co.email}</Text>}{co.license && <Text style={s3.coDet}>License #: {co.license}</Text>}</View>
           <View style={{ alignItems: "flex-end" }}>
             <Text style={s3.docLbl}>ESTIMATE</Text>
             <View style={s3.mRow}><Text style={s3.mKey}>Number</Text><Text style={s3.mVal}>{e.estimateNumber}</Text></View>
@@ -371,6 +379,7 @@ const s4 = StyleSheet.create({
   topBar: { backgroundColor: SL.ink, height: 8 },
   body: { paddingHorizontal: 48, paddingTop: 30 },
   hdr: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 30, paddingBottom: 24, borderBottomWidth: 1.5, borderBottomColor: SL.acc },
+  logoImg: { width: 40, height: 40, marginBottom: 6, objectFit: "contain" },
   coName: { fontSize: 20, fontFamily: B, color: SL.ink, marginBottom: 4 },
   coDet: { fontSize: 7.5, color: SL.mid, marginTop: 2 },
   docLbl: { fontSize: 24, fontFamily: B, color: SL.acc, letterSpacing: 2, marginBottom: 10, textAlign: "right" },
@@ -406,7 +415,7 @@ const s4 = StyleSheet.create({
   ftrTx: { fontSize: 7, color: SL.soft }, ftrBr: { fontSize: 7, color: SL.acc, fontFamily: B },
 });
 
-function Slate({ e }: { e: E }) {
+function Slate({ e, logoSrc }: { e: E; logoSrc?: string }) {
   const co = loadCompanySettings();
   const items = e.lineItems ?? [];
   return (
@@ -415,7 +424,7 @@ function Slate({ e }: { e: E }) {
         <View style={s4.topBar} fixed />
         <View style={s4.body}>
           <View style={s4.hdr}>
-            <View><Text style={s4.coName}>{co.name}</Text>{(co.address || co.city) && <Text style={s4.coDet}>{co.address}{co.city ? `, ${co.city}` : ""}{co.state ? `, ${co.state}` : ""}{co.zip ? ` ${co.zip}` : ""}</Text>}{(co.phone || co.email) && <Text style={s4.coDet}>{co.phone}{co.phone && co.email ? "  ·  " : ""}{co.email}</Text>}{co.license && <Text style={s4.coDet}>License #: {co.license}</Text>}</View>
+            <View>{logoSrc && <Image src={logoSrc} style={s4.logoImg} />}<Text style={s4.coName}>{co.name}</Text>{(co.address || co.city) && <Text style={s4.coDet}>{co.address}{co.city ? `, ${co.city}` : ""}{co.state ? `, ${co.state}` : ""}{co.zip ? ` ${co.zip}` : ""}</Text>}{(co.phone || co.email) && <Text style={s4.coDet}>{co.phone}{co.phone && co.email ? "  ·  " : ""}{co.email}</Text>}{co.license && <Text style={s4.coDet}>License #: {co.license}</Text>}</View>
             <View>
               <Text style={s4.docLbl}>ESTIMATE</Text>
               <View style={s4.mRow}><Text style={s4.mKey}>Number</Text><Text style={s4.mVal}>{e.estimateNumber}</Text></View>
@@ -448,6 +457,7 @@ function Slate({ e }: { e: E }) {
 const s5 = StyleSheet.create({
   page: { fontFamily: R, fontSize: 9, color: "#111", backgroundColor: "#FFFFFF", paddingTop: 50, paddingBottom: 64, paddingHorizontal: 52 },
   hdr: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 36 },
+  logoImg: { width: 40, height: 40, marginBottom: 6, objectFit: "contain" },
   coName: { fontSize: 22, fontFamily: B, color: "#000", letterSpacing: -0.5 },
   coDet: { fontSize: 7.5, color: "#888", marginTop: 3 },
   docLbl: { fontSize: 9, fontFamily: B, color: "#999", letterSpacing: 3, textTransform: "uppercase", marginBottom: 12 },
@@ -483,14 +493,14 @@ const s5 = StyleSheet.create({
   ftrTx: { fontSize: 7, color: "#CCC" }, ftrBr: { fontSize: 7, color: "#999" },
 });
 
-function Minimal({ e }: { e: E }) {
+function Minimal({ e, logoSrc }: { e: E; logoSrc?: string }) {
   const co = loadCompanySettings();
   const items = e.lineItems ?? [];
   return (
     <Document title={`Estimate ${e.estimateNumber}`} author={co.name}>
       <Page size="LETTER" style={s5.page}>
         <View style={s5.hdr}>
-          <View><Text style={s5.coName}>{co.name}</Text>{(co.address || co.city) && <Text style={s5.coDet}>{co.address}{co.city ? `, ${co.city}` : ""}{co.state ? `, ${co.state}` : ""}{co.zip ? ` ${co.zip}` : ""}</Text>}{(co.phone || co.email) && <Text style={s5.coDet}>{co.phone}{co.phone && co.email ? "  ·  " : ""}{co.email}</Text>}{co.license && <Text style={s5.coDet}>License #: {co.license}</Text>}</View>
+          <View>{logoSrc && <Image src={logoSrc} style={s5.logoImg} />}<Text style={s5.coName}>{co.name}</Text>{(co.address || co.city) && <Text style={s5.coDet}>{co.address}{co.city ? `, ${co.city}` : ""}{co.state ? `, ${co.state}` : ""}{co.zip ? ` ${co.zip}` : ""}</Text>}{(co.phone || co.email) && <Text style={s5.coDet}>{co.phone}{co.phone && co.email ? "  ·  " : ""}{co.email}</Text>}{co.license && <Text style={s5.coDet}>License #: {co.license}</Text>}</View>
           <View>
             <Text style={s5.docLbl}>Estimate</Text>
             <View style={s5.mRow}><Text style={s5.mKey}>Number</Text><Text style={s5.mVal}>{e.estimateNumber}</Text></View>
@@ -525,6 +535,7 @@ const s6 = StyleSheet.create({
   page: { fontFamily: R, fontSize: 9, color: BP.wh, backgroundColor: BP.bg, paddingTop: 0, paddingBottom: 60 },
   topBand: { backgroundColor: BP.gold, height: 5 },
   hdrBox: { backgroundColor: BP.panel, paddingTop: 26, paddingBottom: 26, paddingHorizontal: 48, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", borderBottomWidth: 1, borderBottomColor: BP.border },
+  logoImg: { width: 40, height: 40, marginBottom: 6, objectFit: "contain" },
   coName: { fontSize: 20, fontFamily: B, color: BP.wh, marginBottom: 4 },
   coDet: { fontSize: 7.5, color: BP.soft, marginTop: 2 },
   docLbl: { fontSize: 26, fontFamily: B, color: BP.gold, letterSpacing: 3, textAlign: "right", marginBottom: 10 },
@@ -561,7 +572,7 @@ const s6 = StyleSheet.create({
   ftrTx: { fontSize: 7, color: BP.mid }, ftrBr: { fontSize: 7, color: BP.gold, fontFamily: B },
 });
 
-function Blueprint({ e }: { e: E }) {
+function Blueprint({ e, logoSrc }: { e: E; logoSrc?: string }) {
   const co = loadCompanySettings();
   const items = e.lineItems ?? [];
   return (
@@ -569,7 +580,7 @@ function Blueprint({ e }: { e: E }) {
       <Page size="LETTER" style={s6.page}>
         <View style={s6.topBand} fixed />
         <View style={s6.hdrBox} fixed>
-          <View><Text style={s6.coName}>{co.name}</Text>{(co.address || co.city) && <Text style={s6.coDet}>{co.address}{co.city ? `, ${co.city}` : ""}{co.state ? `, ${co.state}` : ""}{co.zip ? ` ${co.zip}` : ""}</Text>}{(co.phone || co.email) && <Text style={s6.coDet}>{co.phone}{co.phone && co.email ? "  ·  " : ""}{co.email}</Text>}{co.license && <Text style={s6.coDet}>License #: {co.license}</Text>}</View>
+          <View>{logoSrc && <Image src={logoSrc} style={s6.logoImg} />}<Text style={s6.coName}>{co.name}</Text>{(co.address || co.city) && <Text style={s6.coDet}>{co.address}{co.city ? `, ${co.city}` : ""}{co.state ? `, ${co.state}` : ""}{co.zip ? ` ${co.zip}` : ""}</Text>}{(co.phone || co.email) && <Text style={s6.coDet}>{co.phone}{co.phone && co.email ? "  ·  " : ""}{co.email}</Text>}{co.license && <Text style={s6.coDet}>License #: {co.license}</Text>}</View>
           <View style={{ alignItems: "flex-end" }}>
             <Text style={s6.docLbl}>ESTIMATE</Text>
             <View style={s6.mRow}><Text style={s6.mKey}>Number</Text><Text style={s6.mVal}>{e.estimateNumber}</Text></View>
@@ -599,32 +610,35 @@ function Blueprint({ e }: { e: E }) {
 // ─────────────────────────────────────────────────────────────────────
 // Public API
 // ─────────────────────────────────────────────────────────────────────
-function buildDoc(e: E, template: PdfTemplate) {
+function buildDoc(e: E, template: PdfTemplate, logoSrc?: string) {
   switch (template) {
-    case "modern":     return <Modern     e={e} />;
-    case "executive":  return <Executive  e={e} />;
-    case "slate":      return <Slate      e={e} />;
-    case "minimal":    return <Minimal    e={e} />;
-    case "blueprint":  return <Blueprint  e={e} />;
-    default:           return <Classic    e={e} />;
+    case "modern":     return <Modern     e={e} logoSrc={logoSrc} />;
+    case "executive":  return <Executive  e={e} logoSrc={logoSrc} />;
+    case "slate":      return <Slate      e={e} logoSrc={logoSrc} />;
+    case "minimal":    return <Minimal    e={e} logoSrc={logoSrc} />;
+    case "blueprint":  return <Blueprint  e={e} logoSrc={logoSrc} />;
+    default:           return <Classic    e={e} logoSrc={logoSrc} />;
   }
 }
 
 export function EstimatePdfDocument({
   estimate,
   template = "classic",
+  logoSrc,
 }: {
   estimate: E;
   template?: PdfTemplate;
+  logoSrc?: string;
 }) {
-  return buildDoc(estimate, template);
+  return buildDoc(estimate, template, logoSrc);
 }
 
 export async function downloadEstimatePdf(
   estimate: E,
   template: PdfTemplate = "classic",
 ) {
-  const blob = await pdf(buildDoc(estimate, template)).toBlob();
+  const logoSrc = await fetchLogoDataUrl();
+  const blob = await pdf(buildDoc(estimate, template, logoSrc ?? undefined)).toBlob();
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement("a");
   a.href     = url;

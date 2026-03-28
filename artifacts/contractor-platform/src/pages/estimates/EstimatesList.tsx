@@ -10,12 +10,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { BlobProvider } from "@react-pdf/renderer";
 import { EstimatePdfDocument, downloadEstimatePdf, PDF_TEMPLATES, type PdfTemplate } from "@/lib/estimatePdf";
-import { loadCompanySettings } from "@/hooks/useCompanySettings";
+import { loadCompanySettings, useCompanySettings, useLogoDataUrl } from "@/hooks/useCompanySettings";
 
 export default function EstimatesList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [previewId, setPreviewId] = useState<number | null>(null);
   const { data: estimates, isLoading } = useListEstimates();
+  const { settings: companySettings } = useCompanySettings();
+  const logoSrc = useLogoDataUrl(companySettings.logoUrl);
   const [, navigate] = useLocation();
 
   const filteredEstimates = estimates?.filter(e => 
@@ -213,7 +215,7 @@ function EstimatePreviewSheet({
               </div>
             </div>
           ) : (
-            <BlobProvider document={<EstimatePdfDocument estimate={estimate} template={template} />}>
+            <BlobProvider document={<EstimatePdfDocument estimate={estimate} template={template} logoSrc={logoSrc ?? undefined} />}>
               {({ url, loading, error }) => {
                 if (loading) return (
                   <div className="h-full flex items-center justify-center">
