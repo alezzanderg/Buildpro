@@ -7,6 +7,7 @@ import {
   pdf,
 } from "@react-pdf/renderer";
 import type { EstimateDetail } from "@workspace/api-client-react";
+import { loadCompanySettings } from "@/hooks/useCompanySettings";
 
 const BRAND = "#F59E0B";
 const DARK = "#0F172A";
@@ -202,11 +203,12 @@ function statusStyle(status: string): { bg: string; border: string; text: string
 type Estimate = NonNullable<EstimateDetail>;
 
 function PdfDoc({ e }: { e: Estimate }) {
+  const company = loadCompanySettings();
   const sc = statusStyle(e.status);
   const items = e.lineItems ?? [];
 
   return (
-    <Document title={`Estimate ${e.estimateNumber}`} author="ProBuilder">
+    <Document title={`Estimate ${e.estimateNumber}`} author={company.name}>
       <Page size="LETTER" style={s.page}>
 
         {/* HEADER */}
@@ -214,13 +216,26 @@ function PdfDoc({ e }: { e: Estimate }) {
           <View>
             <View style={s.logoRow}>
               <View style={s.logoBox}>
-                <Text style={s.logoLetter}>P</Text>
+                <Text style={s.logoLetter}>{company.name.charAt(0).toUpperCase()}</Text>
               </View>
-              <Text style={s.companyName}>ProBuilder</Text>
+              <Text style={s.companyName}>{company.name}</Text>
             </View>
-            <Text style={s.companyDetail}>123 Construction Way, Building City, ST 12345</Text>
-            <Text style={s.companyDetail}>(555) 123-4567  ·  info@probuilder.com</Text>
-            <Text style={s.companyDetail}>License #: GC-2024-001234</Text>
+            {(company.address || company.city) && (
+              <Text style={s.companyDetail}>
+                {company.address}
+                {company.city ? `, ${company.city}` : ""}
+                {company.state ? `, ${company.state}` : ""}
+                {company.zip ? ` ${company.zip}` : ""}
+              </Text>
+            )}
+            {(company.phone || company.email) && (
+              <Text style={s.companyDetail}>
+                {company.phone}{company.phone && company.email ? "  ·  " : ""}{company.email}
+              </Text>
+            )}
+            {company.license && (
+              <Text style={s.companyDetail}>Licencia #: {company.license}</Text>
+            )}
           </View>
           <View>
             <Text style={s.estimateLabel}>ESTIMATE</Text>
@@ -358,7 +373,7 @@ function PdfDoc({ e }: { e: Estimate }) {
           <Text style={s.footerText}>
             This estimate is not a contract. Prices may vary based on final material costs.
           </Text>
-          <Text style={s.footerBrand}>ProBuilder</Text>
+          <Text style={s.footerBrand}>{company.name}</Text>
         </View>
 
       </Page>

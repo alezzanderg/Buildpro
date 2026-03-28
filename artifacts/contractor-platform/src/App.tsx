@@ -13,6 +13,7 @@ import InvoicesList from "./pages/invoices/InvoicesList";
 import MaterialsList from "./pages/materials/MaterialsList";
 import ClientsList from "./pages/clients/ClientsList";
 import SuppliersList from "./pages/suppliers/SuppliersList";
+import Settings from "./pages/Settings";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/materials" component={MaterialsList} />
       <Route path="/clients" component={ClientsList} />
       <Route path="/suppliers" component={SuppliersList} />
+      <Route path="/settings" component={Settings} />
       <Route component={NotFound} />
     </Switch>
   );
