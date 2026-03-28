@@ -315,36 +315,14 @@ function PdfDoc({ e }: { e: Estimate }) {
         {/* TOTALS */}
         <View style={s.totalsSection}>
           <View style={s.totalsBox}>
-            <View style={s.totalsRow}>
-              <Text style={s.totalsLabel}>Subtotal</Text>
-              <Text style={s.totalsVal}>{fmt(e.subtotal)}</Text>
-            </View>
-            {e.materialsCost > 0 && (
-              <View style={s.totalsRow}>
-                <Text style={s.totalsLabelSub}>Materials</Text>
-                <Text style={[s.totalsVal, { color: GRAY, fontSize: 7.5 }]}>{fmt(e.materialsCost)}</Text>
-              </View>
-            )}
-            {e.laborCost > 0 && (
-              <View style={s.totalsRow}>
-                <Text style={s.totalsLabelSub}>Labor</Text>
-                <Text style={[s.totalsVal, { color: GRAY, fontSize: 7.5 }]}>{fmt(e.laborCost)}</Text>
-              </View>
-            )}
-            {e.markupAmount > 0 && (
-              <View style={s.totalsRow}>
-                <Text style={s.totalsLabel}>Markup ({fmtNum(e.markupPercent)}%)</Text>
-                <Text style={s.totalsVal}>+{fmt(e.markupAmount)}</Text>
-              </View>
-            )}
             {e.taxAmount > 0 && (
-              <View style={[s.totalsRow, { borderBottomWidth: 1, borderBottomColor: BORDER, paddingBottom: 5 }]}>
+              <View style={s.totalsRow}>
                 <Text style={s.totalsLabel}>Tax ({fmtNum(e.taxPercent)}%)</Text>
                 <Text style={s.totalsVal}>+{fmt(e.taxAmount)}</Text>
               </View>
             )}
             <View style={[s.totalsRow, s.totalsRowBorder]}>
-              <Text style={s.totalFinalLabel}>Total</Text>
+              <Text style={s.totalFinalLabel}>Project Total</Text>
               <Text style={s.totalFinalVal}>{fmt(e.total)}</Text>
             </View>
           </View>
