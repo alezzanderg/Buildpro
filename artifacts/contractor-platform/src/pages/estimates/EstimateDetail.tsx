@@ -15,11 +15,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
   Save, Printer, ArrowLeft, Plus, Trash2, CheckCircle, 
-  XCircle, Send, FileText, Search
+  XCircle, Send, FileText, Search, Eye, Download
 } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-import { downloadEstimatePdf } from "@/lib/estimatePdf";
+import { downloadEstimatePdf, EstimatePdfDocument } from "@/lib/estimatePdf";
+import { BlobProvider } from "@react-pdf/renderer";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import {
   Dialog,
   DialogContent,
@@ -41,6 +43,7 @@ export default function EstimateDetail() {
   const [taxPercent, setTaxPercent] = useState(0);
   const [notes, setNotes] = useState("");
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   // Sync local state when estimate loads
   useEffect(() => {
@@ -128,9 +131,13 @@ export default function EstimateDetail() {
           </div>
 
           <div className="flex flex-wrap gap-2">
+            <Button variant="outline" className="border-border bg-card" onClick={() => setPreviewOpen(true)}>
+              <Eye className="w-4 h-4 mr-2" />
+              Vista previa PDF
+            </Button>
             <Button variant="outline" className="border-border bg-card" onClick={handlePrint} disabled={pdfLoading}>
-              <Printer className="w-4 h-4 mr-2" />
-              {pdfLoading ? "Generating PDF..." : "Download PDF"}
+              <Download className="w-4 h-4 mr-2" />
+              {pdfLoading ? "Generando..." : "Descargar PDF"}
             </Button>
             
             {estimate.status === 'draft' && (
@@ -414,6 +421,62 @@ export default function EstimateDetail() {
           <p>This is an estimate, not a contract. Prices subject to change based on actual material costs.</p>
         </div>
       </div>
+
+      {/* PDF Preview Sheet */}
+      <Sheet open={previewOpen} onOpenChange={setPreviewOpen}>
+        <SheetContent
+          side="right"
+          className="w-full sm:max-w-2xl p-0 flex flex-col bg-card border-border"
+        >
+          <SheetHeader className="px-5 py-4 border-b border-border flex-shrink-0">
+            <div className="flex items-center justify-between">
+              <div>
+                <SheetTitle className="font-display text-base">{estimate.projectName}</SheetTitle>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {estimate.estimateNumber} · {estimate.clientName ?? "Sin cliente"}
+                </p>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-border mr-6"
+                onClick={handlePrint}
+                disabled={pdfLoading}
+              >
+                <Download className="w-3.5 h-3.5 mr-1.5" />
+                {pdfLoading ? "Generando..." : "Descargar PDF"}
+              </Button>
+            </div>
+          </SheetHeader>
+
+          <div className="flex-1 overflow-hidden bg-muted/30">
+            <BlobProvider document={<EstimatePdfDocument estimate={estimate} />}>
+              {({ url, loading, error }) => {
+                if (loading) return (
+                  <div className="h-full flex items-center justify-center">
+                    <div className="text-center space-y-3">
+                      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                      <p className="text-sm text-muted-foreground">Renderizando PDF...</p>
+                    </div>
+                  </div>
+                );
+                if (error || !url) return (
+                  <div className="h-full flex items-center justify-center">
+                    <p className="text-sm text-destructive">Error al generar la vista previa.</p>
+                  </div>
+                );
+                return (
+                  <iframe
+                    src={url}
+                    className="w-full h-full border-0"
+                    title="Vista previa del estimado"
+                  />
+                );
+              }}
+            </BlobProvider>
+          </div>
+        </SheetContent>
+      </Sheet>
     </AppLayout>
   );
 }
