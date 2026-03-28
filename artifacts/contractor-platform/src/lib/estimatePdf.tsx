@@ -202,6 +202,10 @@ function statusStyle(status: string): { bg: string; border: string; text: string
 
 type Estimate = NonNullable<EstimateDetail>;
 
+export function EstimatePdfDocument({ estimate }: { estimate: Estimate }) {
+  return <PdfDoc e={estimate} />;
+}
+
 function PdfDoc({ e }: { e: Estimate }) {
   const company = loadCompanySettings();
   const sc = statusStyle(e.status);

@@ -1,15 +1,20 @@
 import { useState } from "react";
-import { useListEstimates, useCreateEstimate, useListClients, useCreateClient } from "@workspace/api-client-react";
+import { useListEstimates, useCreateEstimate, useListClients, useCreateClient, useGetEstimate } from "@workspace/api-client-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { Link, useLocation } from "wouter";
-import { Plus, Search, Filter, Eye, FileText, ArrowRight, UserPlus, X, Check } from "lucide-react";
+import { Plus, Search, Filter, Eye, ArrowRight, UserPlus, X, Check, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { BlobProvider } from "@react-pdf/renderer";
+import { EstimatePdfDocument } from "@/lib/estimatePdf";
+import { downloadEstimatePdf } from "@/lib/estimatePdf";
 
 export default function EstimatesList() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [previewId, setPreviewId] = useState<number | null>(null);
   const { data: estimates, isLoading } = useListEstimates();
   const [, navigate] = useLocation();
 
@@ -102,11 +107,22 @@ export default function EstimatesList() {
                         <StatusBadge status={est.status} />
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <Link href={`/estimates/${est.id}`}>
-                          <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10">
-                            Ver <ArrowRight className="w-4 h-4 ml-2" />
+                        <div className="flex items-center justify-end gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-secondary"
+                            title="Vista previa PDF"
+                            onClick={() => setPreviewId(est.id)}
+                          >
+                            <Eye className="w-4 h-4" />
                           </Button>
-                        </Link>
+                          <Link href={`/estimates/${est.id}`}>
+                            <Button variant="ghost" size="sm" className="text-primary hover:text-primary hover:bg-primary/10">
+                              Ver <ArrowRight className="w-4 h-4 ml-2" />
+                            </Button>
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -116,7 +132,96 @@ export default function EstimatesList() {
           </div>
         </div>
       </div>
+
+      <EstimatePreviewSheet
+        estimateId={previewId}
+        onClose={() => setPreviewId(null)}
+      />
     </AppLayout>
+  );
+}
+
+function EstimatePreviewSheet({
+  estimateId,
+  onClose,
+}: {
+  estimateId: number | null;
+  onClose: () => void;
+}) {
+  const { data: estimate, isLoading } = useGetEstimate(
+    estimateId ?? 0,
+    { query: { enabled: estimateId !== null } }
+  );
+
+  return (
+    <Sheet open={estimateId !== null} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent
+        side="right"
+        className="w-full sm:max-w-2xl p-0 flex flex-col bg-card border-border"
+      >
+        <SheetHeader className="px-5 py-4 border-b border-border flex-shrink-0">
+          <div className="flex items-center justify-between">
+            <div>
+              <SheetTitle className="font-display text-base">
+                {estimate?.projectName ?? "Vista previa"}
+              </SheetTitle>
+              {estimate && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {estimate.estimateNumber} · {estimate.clientName ?? "Sin cliente"}
+                </p>
+              )}
+            </div>
+            {estimate && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-border mr-6"
+                onClick={() => downloadEstimatePdf(estimate)}
+              >
+                <Download className="w-3.5 h-3.5 mr-1.5" />
+                Descargar PDF
+              </Button>
+            )}
+          </div>
+        </SheetHeader>
+
+        <div className="flex-1 overflow-hidden bg-muted/30">
+          {isLoading || !estimate ? (
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center space-y-3">
+                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                <p className="text-sm text-muted-foreground">Generando vista previa...</p>
+              </div>
+            </div>
+          ) : (
+            <BlobProvider document={<EstimatePdfDocument estimate={estimate} />}>
+              {({ url, loading, error }) => {
+                if (loading) return (
+                  <div className="h-full flex items-center justify-center">
+                    <div className="text-center space-y-3">
+                      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+                      <p className="text-sm text-muted-foreground">Renderizando PDF...</p>
+                    </div>
+                  </div>
+                );
+                if (error || !url) return (
+                  <div className="h-full flex items-center justify-center">
+                    <p className="text-sm text-destructive">Error al generar la vista previa.</p>
+                  </div>
+                );
+                return (
+                  <iframe
+                    src={url}
+                    className="w-full h-full border-0"
+                    title="Vista previa del estimado"
+                  />
+                );
+              }}
+            </BlobProvider>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
 
