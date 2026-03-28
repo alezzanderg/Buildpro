@@ -31,85 +31,85 @@ const STATUS_COLORS: Record<string, string> = {
   rejected: "bg-red-500/15 text-red-400 border border-red-500/30",
 };
 
+// ── Terms section metadata ────────────────────────────────────────────
+const TERMS_META: Array<{
+  key: string;
+  label: string;
+  helper: string;
+  inBasic: boolean;
+}> = [
+  { key: "changeOrders",   label: "Change Orders",             helper: "Requires written approval before performing any work outside the original scope.", inBasic: true },
+  { key: "siteConditions", label: "Site Conditions",           helper: "Protects against unexpected conditions discovered after work begins (mold, rot, hidden damage, etc.).", inBasic: true },
+  { key: "materials",      label: "Materials & Substitutions", helper: "Covers what happens if a specified material is unavailable or backordered.", inBasic: false },
+  { key: "permits",        label: "Permits, Codes & Approvals",helper: "Clarifies that permits and engineering are not included unless explicitly stated.", inBasic: true },
+  { key: "access",         label: "Access & Jobsite Conditions",helper: "Sets client obligations for access, utilities, and a clear work area.", inBasic: false },
+  { key: "cleanup",        label: "Cleanup & Disposal",        helper: "Defines what basic cleanup is included and what is excluded.", inBasic: true },
+  { key: "warranty",       label: "Warranty / Guarantee",      helper: "States how long workmanship is covered and what is excluded.", inBasic: true },
+  { key: "cancellation",   label: "Cancellation / Rescheduling",helper: "Covers deposit non-refundability and costs if the project is cancelled.", inBasic: true },
+  { key: "liability",      label: "Limitation of Liability",   helper: "Limits financial exposure to the value of contracted work performed.", inBasic: false },
+];
+
+const TERMS_KEYS = TERMS_META.map(t => t.key);
+
+const ALL_VISIBLE: Record<string, boolean> = Object.fromEntries(TERMS_KEYS.map(k => [k, true]));
+const BASIC_VISIBLE: Record<string, boolean> = Object.fromEntries(TERMS_META.map(t => [t.key, t.inBasic]));
+
+const WARRANTY_PERIODS = ["30 days", "90 days", "6 months", "1 year", "2 years"];
+
 type FormState = {
   projectName: string; clientId: string; status: string; validUntil: string;
-  // Project sections
   introText: string; projectOverview: string; scopeOfWork: string;
   exclusions: string; allowances: string; deliverables: string;
   timeline: string; paymentTerms: string;
-  // Standard terms
   changeOrders: string; siteConditions: string; materials: string;
   permits: string; access: string; cleanup: string;
   warranty: string; cancellation: string; liability: string;
-  // Internal
   notes: string;
+  warrantyPeriod: string;
 };
 
-// Sections shown in PDF and enhanced by AI
 const PROJECT_SECTIONS: (keyof FormState)[] = [
   "introText", "projectOverview", "scopeOfWork", "exclusions",
   "allowances", "deliverables", "timeline", "paymentTerms",
 ];
-const TERMS_SECTIONS: (keyof FormState)[] = [
-  "changeOrders", "siteConditions", "materials", "permits",
-  "access", "cleanup", "warranty", "cancellation", "liability",
-];
-const ALL_TEXT_SECTIONS = [...PROJECT_SECTIONS, ...TERMS_SECTIONS];
 
 const SECTION_LABELS: Partial<Record<keyof FormState, string>> = {
-  introText:       "Introduction",
-  projectOverview: "Project Overview",
-  scopeOfWork:     "Scope of Work",
-  exclusions:      "Exclusions",
-  allowances:      "Allowances & Selections",
-  deliverables:    "Deliverables",
-  timeline:        "Timeline",
-  paymentTerms:    "Payment Terms",
-  changeOrders:    "Change Orders",
-  siteConditions:  "Site Conditions",
-  materials:       "Materials & Substitutions",
-  permits:         "Permits, Codes & Approvals",
-  access:          "Access & Jobsite Conditions",
-  cleanup:         "Cleanup & Disposal",
-  warranty:        "Warranty / Guarantee",
-  cancellation:    "Cancellation / Rescheduling",
-  liability:       "Limitation of Liability",
-  notes:           "Internal Notes",
+  introText: "Introduction", projectOverview: "Project Overview",
+  scopeOfWork: "Scope of Work", exclusions: "Exclusions",
+  allowances: "Allowances & Selections", deliverables: "Deliverables",
+  timeline: "Timeline", paymentTerms: "Payment Terms",
 };
 
 const SECTION_PLACEHOLDERS: Partial<Record<keyof FormState, string>> = {
   introText:       "Thank you for the opportunity to submit this proposal...",
   projectOverview: "The purpose of this project is to...",
-  scopeOfWork:     "The work included in this proposal consists of the following:\n\n- Demolition & removal of existing materials\n- Installation of new materials",
-  exclusions:      "Unless specifically listed in the scope, the following are excluded:\n\n- Permits and engineering\n- Hidden damage or mold remediation",
-  allowances:      "The following items require final owner selection or approval:\n\n- Tile and finish selections\n- Fixture models and finishes",
-  deliverables:    "Upon completion, deliverables will include:\n\n- Completion of agreed scope\n- Debris removal from work areas",
-  timeline:        "- Preparation: 1 day\n- Demolition: 1–2 days\n- Installation: 3–5 days\n- Final walkthrough: 1 day",
-  paymentTerms:    "50% deposit due upon acceptance.\n25% at project midpoint.\n25% due upon substantial completion.",
-  changeOrders:    "Any work outside the original scope must be approved in writing...",
-  siteConditions:  "This proposal is based on visible conditions at time of estimate...",
-  materials:       "Materials will be installed as specified or based on approved selections...",
-  permits:         "Unless explicitly stated, permits and engineering are excluded...",
-  access:          "The client agrees to provide reasonable access during working hours...",
-  cleanup:         "Basic jobsite cleanup is included...",
-  warranty:        "We warrant our workmanship for one (1) year from substantial completion...",
-  cancellation:    "Deposits may be non-refundable once scheduling or materials have begun...",
-  liability:       "Our liability is limited to the value of contracted work performed...",
+  scopeOfWork:     "- Protect floors and adjacent finishes before starting\n- Remove existing materials scheduled for replacement\n- Install new drywall where required",
+  exclusions:      "- Permits and engineering\n- Hidden damage or mold remediation\n- Owner-supplied material labor",
+  allowances:      "- Tile and finish selections\n- Fixture models and finishes",
+  deliverables:    "- Completion of agreed scope\n- Debris removal from work areas\n- Final walkthrough",
+  timeline:        "- Preparation: 1 day\n- Demolition: 1–2 days\n- Installation: 3–5 days",
+  paymentTerms:    "50% deposit due upon acceptance.\n50% due upon substantial completion.",
   notes:           "Internal notes — not shown on the PDF.",
 };
 
-// Default boilerplate text pre-populated for terms sections
-const TERMS_DEFAULTS: Partial<Record<keyof FormState, string>> = {
-  changeOrders:  "Any work requested by the client that is outside the original scope of work must be documented and approved in writing before the additional work is performed. Change orders may affect pricing, material needs, and project duration.",
-  siteConditions:"This proposal is based on visible conditions at the time of the estimate. We are not responsible for hidden or concealed conditions including structural deficiencies, water damage, code violations, pest damage, mold, rot, deteriorated framing, outdated utilities, or inaccessible systems discovered after work begins. Any such conditions will be brought to the client's attention and may require additional work and cost.",
-  materials:     "Materials will be installed as specified in the proposal or based on approved selections. If a specified material becomes unavailable, a comparable substitute may be recommended for client approval. Delays caused by backorders, discontinued products, or supplier issues may impact the project timeline.",
-  permits:       "Unless explicitly stated otherwise, permits, plans, engineering, and municipal approvals are excluded from this proposal. Work will be performed in accordance with standard trade practices; however, any required upgrades related to code compliance discovered during the project may result in additional charges if not included in the original scope.",
-  access:        "The client agrees to provide reasonable access to the work area during normal working hours and to ensure that water, electricity, and any other necessary utilities are available unless otherwise agreed. The work area should be reasonably cleared of personal items, furniture, valuables, and obstacles prior to the start of work.",
-  cleanup:       "Basic jobsite cleanup is included unless otherwise stated. This includes removal of construction debris generated by our work from active work areas. Deep cleaning, specialized disposal, hazardous waste handling, and off-site hauling beyond standard debris removal are excluded unless specifically listed in the proposal.",
-  warranty:      "We warrant our workmanship for a period of one (1) year from the date of substantial completion, covering defects caused by installation or labor performed by our company under normal use conditions. This warranty does not cover owner abuse, misuse, neglect, manufacturer defects, normal wear and tear, or damage caused by third parties or conditions outside our control.",
-  cancellation:  "Deposits may be non-refundable once scheduling, material ordering, fabrication, or mobilization has begun. If the client cancels the project after acceptance and before completion, the client agrees to pay for work performed, materials ordered, restocking fees, and any costs incurred up to the cancellation date.",
-  liability:     "Our liability under this proposal shall be limited to the value of the contracted work actually performed. We shall not be liable for incidental, indirect, special, or consequential damages, delays outside our control, or pre-existing conditions not caused by our work.",
+// Simplified boilerplate defaults (client-side fallback for legacy proposals)
+const TERMS_DEFAULTS: Partial<Record<string, string>> = {
+  changeOrders:   "Any work outside the original scope requires written approval before proceeding. Change orders may affect the project price and timeline.",
+  siteConditions: "This proposal is based on visible conditions at the time of the estimate. Hidden conditions discovered after work begins — including rot, mold, water damage, structural issues, or outdated systems — are not included in this price and will be communicated before any additional work is performed.",
+  materials:      "Materials will be installed as specified or per approved selections. If a specified item becomes unavailable, a comparable substitute will be recommended for approval. Supply delays may affect the project schedule.",
+  permits:        "Permits, engineering, inspections, and municipal approvals are excluded from this proposal unless explicitly stated. Any code-required upgrades discovered during the project may result in additional cost.",
+  access:         "The client agrees to provide reasonable access to the work area during working hours and ensure utilities (water, electricity) are available as needed. The work area should be cleared of furniture, valuables, and personal items before work begins.",
+  cleanup:        "Basic jobsite cleanup is included — construction debris from our work will be removed from active work areas. Deep cleaning, hazardous waste handling, and specialized disposal are excluded unless specifically listed.",
+  warranty:       "Our workmanship is warranted for 1 year from the date of substantial completion against defects caused by our installation or labor under normal use conditions. This warranty does not cover owner misuse, manufacturer defects, normal wear and tear, or damage caused by third parties or conditions outside our control.",
+  cancellation:   "Deposits may be non-refundable once materials have been ordered or scheduling has begun. If the project is cancelled after acceptance, the client is responsible for work completed, materials ordered, and costs incurred to date.",
+  liability:      "Our liability is limited to the value of contracted work performed. We are not liable for incidental, indirect, or consequential damages, or for pre-existing conditions not caused by our work.",
 };
+
+function parseTermsConfig(raw: string | null | undefined): Record<string, boolean> {
+  if (!raw) return { ...BASIC_VISIBLE };
+  try { return JSON.parse(raw); }
+  catch { return { ...BASIC_VISIBLE }; }
+}
 
 // ── Live PDF preview panel ────────────────────────────────────────────
 function PdfPreviewPanel({
@@ -154,17 +154,17 @@ function PdfPreviewPanel({
   );
 }
 
-// ── Section editor row ────────────────────────────────────────────────
+// ── Section editor ────────────────────────────────────────────────────
 function SectionField({
-  fieldKey, value, isEnhancing, onChange,
+  fieldKey, label, placeholder, value, isEnhancing, onChange,
 }: {
-  fieldKey: keyof FormState;
+  fieldKey: string;
+  label: string;
+  placeholder?: string;
   value: string;
   isEnhancing: boolean;
   onChange: (v: string) => void;
 }) {
-  const label = SECTION_LABELS[fieldKey] ?? fieldKey;
-  const placeholder = SECTION_PLACEHOLDERS[fieldKey] ?? "";
   return (
     <div className="space-y-2">
       <div className="flex items-center gap-2">
@@ -181,7 +181,7 @@ function SectionField({
       <Textarea
         value={value}
         onChange={e => onChange(e.target.value)}
-        placeholder={placeholder}
+        placeholder={placeholder ?? ""}
         disabled={isEnhancing}
         className={`min-h-[100px] resize-y font-sans text-sm leading-relaxed transition-all ${
           isEnhancing
@@ -205,12 +205,14 @@ export default function ProposalDetail() {
   const updateProposal = useUpdateProposal();
 
   const [form, setForm] = useState<FormState | null>(null);
+  const [termsVisible, setTermsVisible] = useState<Record<string, boolean>>(BASIC_VISIBLE);
+  const [termsMode, setTermsMode] = useState<"basic" | "standard">("basic");
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [pdfTemplate, setPdfTemplate] = useState<PdfTemplate>("classic");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState(false);
-  const [enhancing, setEnhancing] = useState<Partial<Record<keyof FormState, boolean>>>({});
+  const [enhancing, setEnhancing] = useState<Partial<Record<string, boolean>>>({});
   const [enhancingAll, setEnhancingAll] = useState(false);
   const [previewData, setPreviewData] = useState<ProposalDetailType | null>(null);
   const [termsExpanded, setTermsExpanded] = useState(false);
@@ -220,12 +222,19 @@ export default function ProposalDetail() {
 
   useEffect(() => {
     if (proposal && !form) {
+      const vis = parseTermsConfig(proposal.termsConfig);
+      setTermsVisible(vis);
+      // Detect mode from saved config
+      const isBasic = TERMS_META.every(t => !t.inBasic || vis[t.key]) &&
+        TERMS_META.filter(t => !t.inBasic).every(t => !vis[t.key]);
+      setTermsMode(isBasic ? "basic" : "standard");
+
       setForm({
         projectName:     proposal.projectName ?? "",
         clientId:        proposal.clientId ? String(proposal.clientId) : "",
         status:          proposal.status ?? "draft",
         validUntil:      proposal.validUntil ?? "",
-        introText:       proposal.introText ?? "Thank you for the opportunity to provide this proposal for your project. Our goal is to deliver professional workmanship, clear communication, and an organized process from start to finish. This proposal outlines the scope of work, project assumptions, estimated timeline, payment terms, and conditions associated with the services requested.\n\nWe are committed to completing the work in a professional and timely manner while maintaining jobsite safety, cleanliness, and respect for the property. Any client-specific requests, selections, or special considerations should be documented and approved before work begins.",
+        introText:       proposal.introText ?? TERMS_DEFAULTS.introText ?? "",
         projectOverview: proposal.projectOverview ?? "",
         scopeOfWork:     proposal.scopeOfWork ?? "",
         exclusions:      proposal.exclusions ?? "",
@@ -233,7 +242,6 @@ export default function ProposalDetail() {
         deliverables:    proposal.deliverables ?? "",
         timeline:        proposal.timeline ?? "",
         paymentTerms:    proposal.paymentTerms ?? "",
-        // Fall back to boilerplate defaults for terms sections
         changeOrders:    proposal.changeOrders ?? TERMS_DEFAULTS.changeOrders ?? "",
         siteConditions:  proposal.siteConditions ?? TERMS_DEFAULTS.siteConditions ?? "",
         materials:       proposal.materials ?? TERMS_DEFAULTS.materials ?? "",
@@ -244,9 +252,27 @@ export default function ProposalDetail() {
         cancellation:    proposal.cancellation ?? TERMS_DEFAULTS.cancellation ?? "",
         liability:       proposal.liability ?? TERMS_DEFAULTS.liability ?? "",
         notes:           proposal.notes ?? "",
+        warrantyPeriod:  proposal.warrantyPeriod ?? "1 year",
       });
     }
   }, [proposal, form]);
+
+  function switchTermsMode(mode: "basic" | "standard") {
+    setTermsMode(mode);
+    const vis = mode === "basic" ? { ...BASIC_VISIBLE } : { ...ALL_VISIBLE };
+    setTermsVisible(vis);
+    setDirty(true);
+    scheduleAutoSave();
+  }
+
+  function toggleSection(key: string) {
+    setTermsVisible(prev => {
+      const next = { ...prev, [key]: !prev[key] };
+      setDirty(true);
+      scheduleAutoSave();
+      return next;
+    });
+  }
 
   const mergedProposal = useMemo<ProposalDetailType | null>(() => {
     if (!form || !proposal) return null;
@@ -274,21 +300,21 @@ export default function ProposalDetail() {
       warranty:        form.warranty || null,
       cancellation:    form.cancellation || null,
       liability:       form.liability || null,
+      termsConfig:     JSON.stringify(termsVisible),
+      warrantyPeriod:  form.warrantyPeriod,
       terms:           null,
       notes:           form.notes || null,
     };
-  }, [form, proposal, clients]);
+  }, [form, proposal, clients, termsVisible]);
 
   useEffect(() => {
     if (!mergedProposal) return;
     if (previewTimer.current) clearTimeout(previewTimer.current);
-    previewTimer.current = setTimeout(() => {
-      setPreviewData(mergedProposal);
-    }, 1500);
+    previewTimer.current = setTimeout(() => setPreviewData(mergedProposal), 1500);
     if (!previewData) setPreviewData(mergedProposal);
   }, [mergedProposal]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const saveNow = useCallback(async (f: FormState, p: ProposalDetailType) => {
+  const saveNow = useCallback(async (f: FormState, p: ProposalDetailType, vis: Record<string, boolean>) => {
     setSaving(true);
     try {
       await updateProposal.mutateAsync({
@@ -315,6 +341,8 @@ export default function ProposalDetail() {
           warranty:        f.warranty || null,
           cancellation:    f.cancellation || null,
           liability:       f.liability || null,
+          termsConfig:     JSON.stringify(vis),
+          warrantyPeriod:  f.warrantyPeriod || "1 year",
           notes:           f.notes || null,
         },
       });
@@ -326,28 +354,35 @@ export default function ProposalDetail() {
     }
   }, [updateProposal, toast]);
 
-  function update(key: keyof FormState, value: string) {
-    setForm(prev => prev ? { ...prev, [key]: value } : prev);
-    setDirty(true);
+  function scheduleAutoSave() {
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
       setForm(prev => {
-        if (prev && proposal) saveNow(prev, proposal);
+        setTermsVisible(vis => {
+          if (prev && proposal) saveNow(prev, proposal, vis);
+          return vis;
+        });
         return prev;
       });
     }, 1500);
   }
 
+  function update(key: keyof FormState, value: string) {
+    setForm(prev => prev ? { ...prev, [key]: value } : prev);
+    setDirty(true);
+    scheduleAutoSave();
+  }
+
   async function handleManualSave() {
     if (!form || !proposal) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
-    await saveNow(form, proposal);
+    await saveNow(form, proposal, termsVisible);
     toast({ title: "Proposal saved" });
   }
 
-  async function streamEnhance(key: keyof FormState): Promise<void> {
+  async function streamEnhance(key: string): Promise<void> {
     if (!form) return;
-    const currentText = form[key];
+    const currentText = (form as Record<string, string>)[key];
     if (!currentText?.trim()) return;
     setEnhancing(prev => ({ ...prev, [key]: true }));
     setForm(prev => prev ? { ...prev, [key]: "" } : prev);
@@ -382,17 +417,14 @@ export default function ProposalDetail() {
               const snap = accumulated;
               setForm(prev => prev ? { ...prev, [key]: snap } : prev);
             }
-          } catch { /* skip malformed */ }
+          } catch { /* skip */ }
         }
       }
       setDirty(true);
-      if (saveTimer.current) clearTimeout(saveTimer.current);
-      saveTimer.current = setTimeout(() => {
-        setForm(prev => { if (prev && proposal) saveNow(prev, proposal); return prev; });
-      }, 1500);
+      scheduleAutoSave();
     } catch {
       setForm(prev => prev ? { ...prev, [key]: currentText } : prev);
-      toast({ title: `Failed to enhance ${SECTION_LABELS[key] ?? key}`, variant: "destructive" });
+      toast({ title: `Failed to enhance section`, variant: "destructive" });
     } finally {
       setEnhancing(prev => ({ ...prev, [key]: false }));
     }
@@ -401,30 +433,24 @@ export default function ProposalDetail() {
   async function copyAllText() {
     if (!form) return;
     const lines: string[] = [];
-    for (const key of ALL_TEXT_SECTIONS) {
-      const text = form[key]?.trim();
+    const allKeys = [...PROJECT_SECTIONS, ...TERMS_KEYS];
+    for (const key of allKeys) {
+      const text = (form as Record<string, string>)[key]?.trim();
       if (text) {
-        lines.push(`--- ${(SECTION_LABELS[key] ?? key).toUpperCase()} ---`);
+        lines.push(`--- ${(SECTION_LABELS[key as keyof FormState] ?? key).toUpperCase()} ---`);
         lines.push(text);
         lines.push("");
       }
     }
-    if (!lines.length) {
-      toast({ title: "No content to copy yet", variant: "destructive" });
-      return;
-    }
+    if (!lines.length) { toast({ title: "No content to copy yet", variant: "destructive" }); return; }
     await navigator.clipboard.writeText(lines.join("\n"));
-    toast({ title: "Copied to clipboard", description: "All sections copied as plain text." });
+    toast({ title: "Copied to clipboard" });
   }
 
-  // Enhance All: only project sections by default (terms sections have boilerplate)
   async function enhanceAll() {
     if (!form) return;
-    const filled = PROJECT_SECTIONS.filter(k => form[k]?.trim());
-    if (!filled.length) {
-      toast({ title: "Write some content first before enhancing", variant: "destructive" });
-      return;
-    }
+    const filled = PROJECT_SECTIONS.filter(k => (form as Record<string, string>)[k]?.trim());
+    if (!filled.length) { toast({ title: "Write some content first", variant: "destructive" }); return; }
     setEnhancingAll(true);
     toast({ title: `Enhancing ${filled.length} section${filled.length > 1 ? "s" : ""}…` });
     await Promise.all(filled.map(k => streamEnhance(k)));
@@ -436,20 +462,16 @@ export default function ProposalDetail() {
     if (!form || !proposal) return;
     const updated = { ...form, status };
     setForm(updated);
-    await saveNow(updated, proposal);
+    await saveNow(updated, proposal, termsVisible);
     toast({ title: `Marked as ${status}` });
   }
 
   async function handleDownloadPdf() {
     if (!mergedProposal) return;
     setPdfGenerating(true);
-    try {
-      await downloadProposalPdf(mergedProposal, pdfTemplate);
-    } catch {
-      toast({ title: "PDF generation failed", variant: "destructive" });
-    } finally {
-      setPdfGenerating(false);
-    }
+    try { await downloadProposalPdf(mergedProposal, pdfTemplate); }
+    catch { toast({ title: "PDF generation failed", variant: "destructive" }); }
+    finally { setPdfGenerating(false); }
   }
 
   if (isLoading || !form) {
@@ -474,6 +496,7 @@ export default function ProposalDetail() {
   }
 
   const anyEnhancing = Object.values(enhancing).some(Boolean);
+  const visibleCount = Object.values(termsVisible).filter(Boolean).length;
 
   return (
     <AppLayout>
@@ -514,36 +537,22 @@ export default function ProposalDetail() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-1.5 text-muted-foreground hover:text-foreground"
-              onClick={copyAllText}
-              title="Copy all section text to clipboard"
-            >
+            <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground hover:text-foreground" onClick={copyAllText}>
               <ClipboardCopy className="w-4 h-4" />
               <span className="hidden sm:inline">Copy All</span>
             </Button>
 
             <Button
-              variant="outline"
-              size="sm"
+              variant="outline" size="sm"
               className={`gap-1.5 border-primary/40 text-primary hover:bg-primary/10 ${anyEnhancing || enhancingAll ? "animate-pulse" : ""}`}
               onClick={enhanceAll}
               disabled={anyEnhancing || enhancingAll}
             >
-              {anyEnhancing || enhancingAll
-                ? <Loader2 className="w-4 h-4 animate-spin" />
-                : <Sparkles className="w-4 h-4" />}
+              {anyEnhancing || enhancingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
               <span className="hidden sm:inline">{enhancingAll ? "Enhancing…" : "Enhance All"}</span>
             </Button>
 
-            <Button
-              variant={previewOpen ? "default" : "outline"}
-              size="sm"
-              className="gap-1.5"
-              onClick={() => setPreviewOpen(v => !v)}
-            >
+            <Button variant={previewOpen ? "default" : "outline"} size="sm" className="gap-1.5" onClick={() => setPreviewOpen(v => !v)}>
               {previewOpen ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               <span className="hidden sm:inline">{previewOpen ? "Hide Preview" : "Preview"}</span>
             </Button>
@@ -562,7 +571,7 @@ export default function ProposalDetail() {
           <div className={`flex-1 min-w-0 overflow-auto transition-all duration-300 ${previewOpen ? "max-w-[50%]" : ""}`}>
             <div className="max-w-2xl mx-auto p-6 space-y-6">
 
-              {/* Meta fields */}
+              {/* Meta */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-5 rounded-xl border border-border bg-card">
                 <div className="space-y-1.5">
                   <Label>Project Name</Label>
@@ -584,21 +593,25 @@ export default function ProposalDetail() {
                 </div>
               </div>
 
-              {/* ── Project sections ────────────────────────────── */}
+              {/* Project sections */}
               <div className="space-y-5">
                 {PROJECT_SECTIONS.map(key => (
                   <SectionField
                     key={key}
                     fieldKey={key}
-                    value={form[key]}
+                    label={SECTION_LABELS[key] ?? key}
+                    placeholder={SECTION_PLACEHOLDERS[key]}
+                    value={(form as Record<string, string>)[key]}
                     isEnhancing={!!enhancing[key]}
                     onChange={v => update(key, v)}
                   />
                 ))}
               </div>
 
-              {/* ── Standard Terms (collapsible) ─────────────────── */}
+              {/* ── Standard Terms accordion ─────────────────────── */}
               <div className="rounded-xl border border-border overflow-hidden">
+
+                {/* Accordion header */}
                 <button
                   type="button"
                   className="w-full flex items-center justify-between px-5 py-3.5 bg-muted/40 hover:bg-muted/60 transition-colors text-left"
@@ -607,29 +620,128 @@ export default function ProposalDetail() {
                   <div className="flex items-center gap-2">
                     <div className="w-0.5 h-4 rounded bg-muted-foreground" />
                     <span className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                      Standard Terms &amp; Conditions
+                      Terms &amp; Conditions
                     </span>
-                    <span className="text-xs text-muted-foreground/60 ml-1">({TERMS_SECTIONS.length} sections)</span>
+                    <span className="text-xs text-muted-foreground/60 ml-1">
+                      ({visibleCount} of {TERMS_KEYS.length} shown in PDF)
+                    </span>
                   </div>
-                  <ChevronRight
-                    className={`w-4 h-4 text-muted-foreground transition-transform ${termsExpanded ? "rotate-90" : ""}`}
-                  />
+                  <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform ${termsExpanded ? "rotate-90" : ""}`} />
                 </button>
 
                 {termsExpanded && (
-                  <div className="p-5 space-y-5 border-t border-border bg-card">
-                    <p className="text-xs text-muted-foreground">
-                      These sections are pre-filled with standard boilerplate language. Edit as needed — all sections appear in the PDF.
-                    </p>
-                    {TERMS_SECTIONS.map(key => (
-                      <SectionField
-                        key={key}
-                        fieldKey={key}
-                        value={form[key]}
-                        isEnhancing={!!enhancing[key]}
-                        onChange={v => update(key, v)}
-                      />
-                    ))}
+                  <div className="border-t border-border bg-card">
+
+                    {/* Mode selector + warranty period */}
+                    <div className="px-5 pt-4 pb-3 flex flex-wrap items-center gap-3 border-b border-border/60">
+                      {/* Mode toggle */}
+                      <div className="flex items-center gap-1 rounded-lg border border-border p-0.5 bg-muted/30">
+                        <button
+                          type="button"
+                          onClick={() => switchTermsMode("basic")}
+                          className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                            termsMode === "basic"
+                              ? "bg-card text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          Basic (6 sections)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => switchTermsMode("standard")}
+                          className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                            termsMode === "standard"
+                              ? "bg-card text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          Standard (all 9)
+                        </button>
+                      </div>
+
+                      {/* Warranty period */}
+                      <div className="flex items-center gap-2 ml-auto">
+                        <span className="text-xs text-muted-foreground">Warranty period:</span>
+                        <Select
+                          value={form.warrantyPeriod || "1 year"}
+                          onValueChange={v => update("warrantyPeriod", v)}
+                        >
+                          <SelectTrigger className="h-7 text-xs w-28 border-border">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {WARRANTY_PERIODS.map(p => (
+                              <SelectItem key={p} value={p} className="text-xs">{p}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Per-section fields with toggle */}
+                    <div className="p-5 space-y-5">
+                      {TERMS_META.map(meta => {
+                        const isVisible = !!termsVisible[meta.key];
+                        const isEnhancing = !!enhancing[meta.key];
+                        const val = (form as Record<string, string>)[meta.key] ?? "";
+
+                        return (
+                          <div key={meta.key} className={`space-y-2 transition-opacity ${!isVisible ? "opacity-40" : ""}`}>
+                            {/* Header row */}
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <div className={`w-0.5 h-4 rounded flex-shrink-0 ${isVisible ? "bg-muted-foreground" : "bg-muted"}`} />
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                      {meta.label}
+                                    </Label>
+                                    {isEnhancing && (
+                                      <span className="flex items-center gap-1 text-xs text-primary">
+                                        <Sparkles className="w-3 h-3 animate-pulse" /> Enhancing…
+                                      </span>
+                                    )}
+                                  </div>
+                                  <p className="text-xs text-muted-foreground/60 mt-0.5">{meta.helper}</p>
+                                </div>
+                              </div>
+                              {/* Show/hide toggle */}
+                              <button
+                                type="button"
+                                onClick={() => toggleSection(meta.key)}
+                                className={`flex-shrink-0 p-1 rounded transition-colors ${
+                                  isVisible
+                                    ? "text-muted-foreground hover:text-foreground"
+                                    : "text-muted hover:text-muted-foreground"
+                                }`}
+                                title={isVisible ? "Hide from PDF" : "Show in PDF"}
+                              >
+                                {isVisible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                              </button>
+                            </div>
+
+                            {/* Text area — only shown when visible */}
+                            {isVisible && (
+                              <Textarea
+                                value={val}
+                                onChange={e => update(meta.key as keyof FormState, e.target.value)}
+                                disabled={isEnhancing}
+                                className={`min-h-[72px] resize-y font-sans text-sm leading-relaxed ${
+                                  isEnhancing
+                                    ? "bg-primary/5 border-primary/30 text-foreground/60 cursor-wait"
+                                    : "bg-muted/20 border-border"
+                                }`}
+                              />
+                            )}
+
+                            {!isVisible && (
+                              <p className="text-xs text-muted-foreground/40 pl-5 italic">Hidden — not shown in PDF</p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </div>

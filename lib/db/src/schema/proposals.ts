@@ -26,6 +26,9 @@ export const proposalsTable = pgTable("proposals", {
   warranty:        text("warranty"),
   cancellation:    text("cancellation"),
   liability:       text("liability"),
+  // ── Terms configuration ──────────────────────────────────
+  termsConfig:     text("terms_config"),   // JSON: { changeOrders: true, materials: false, ... }
+  warrantyPeriod:  text("warranty_period").default("1 year"),
   // ── Legacy / internal ────────────────────────────────────
   terms:           text("terms"),
   notes:           text("notes"),

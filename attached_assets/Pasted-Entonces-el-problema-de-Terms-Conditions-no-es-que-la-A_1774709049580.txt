@@ -1,0 +1,85 @@
+Entonces el problema de Terms & Conditions no es que la AI los esté inventando, sino que tu plataforma ya los está metiendo como prefill estándar. Eso explica por qué seguían saliendo aunque el enhancer estuviera más controlado. Y también explica por qué el texto principal ya mejoró, pero esa parte seguía casi igual.
+
+Y sí, lo de Exclusions seguramente fue solo que pegaste el contenido en la sección equivocada. El contenido que salió ahí realmente es de exclusiones, no de allowances/selections.
+
+Sobre los Standard Terms & Conditions, honestamente están bastante bien como base. Se ven profesionales y cubren puntos importantes. Pero sí hay varias cosas que yo mejoraría para que se sientan más útiles, menos pesados y más claros para el usuario final.
+
+Los puntos a mejorar serían estos:
+
+Primero, están un poco largos y densos.
+Para muchos proyectos pequeños o medianos, nueve secciones completas pueden sentirse demasiado contractuales. Conviene tener una versión Basic y una versión Extended. La básica podría cubrir solo:
+change orders, site conditions, permits, cleanup, warranty, cancellation.
+La extendida ya incluiría liability, substitutions, access, etc.
+
+Segundo, algunas secciones se pisan entre sí.
+Por ejemplo:
+Site Conditions y partes de Permits, Codes & Approvals se cruzan bastante.
+Cleanup & Disposal también toca cosas que parcialmente ya aparecen en el scope o deliverables.
+Eso hace que el documento se sienta repetitivo.
+
+Tercero, el lenguaje está muy “one-size-fits-all”.
+Sirve como boilerplate, pero no siempre aplica igual para remodelación ligera, pintura, flooring, HVAC, plumbing o bathroom renovation.
+Sería mejor que el prefill cambie un poco según el tipo de proyecto. Por ejemplo:
+si es interior remodeling, incluir hidden conditions y material selections
+si es HVAC, incluir equipment access, existing system condition, manufacturer warranty
+si es plumbing, incluir hidden piping conditions, shutoffs, code-required updates
+si es painting/flooring, usar términos más simples y menos pesados
+
+Cuarto, la sección de Warranty / Guarantee está demasiado específica si siempre pone one (1) year.
+Eso no debería estar fijo a menos que la empresa realmente quiera ese estándar por defecto.
+Mejor sería:
+una variable editable, o un dropdown con opciones tipo:
+30 days / 90 days / 6 months / 1 year / custom.
+Porque si no, el sistema puede prometer algo que la empresa no quería prometer.
+
+Quinto, Cancellation / Rescheduling y Limitation of Liability son secciones delicadas.
+No digo que estén mal, pero sí pueden sentirse demasiado agresivas para un proposal comercial normal, especialmente si el cliente todavía ni ha firmado.
+A veces conviene dejarlas más suaves o mover algunas de esas cláusulas a un contrato posterior en vez de ponerlas tan fuerte en la propuesta inicial.
+
+Sexto, faltaría una mejora de UX importante:
+cada sección debería tener un pequeño helper text en la UI explicando en lenguaje simple qué hace.
+Por ejemplo:
+
+Change Orders
+Explains that extra work outside the original scope must be approved first.
+
+Site Conditions
+Protects against hidden conditions discovered after work begins.
+
+Warranty
+States how long workmanship is covered and what is excluded.
+
+Eso ayudaría mucho a que el usuario entienda qué está editando.
+
+Séptimo, yo revisaría el tono para hacerlo un poco más claro y menos “legal wall of text”.
+Ahora se entiende, pero se puede simplificar sin perder protección.
+Por ejemplo, varias frases podrían acortarse para que se lean mejor en PDF y en móvil.
+
+Octavo, si todas las secciones “always appear in the PDF”, entonces la plataforma debería permitir:
+toggle on/off por sección
+o al menos elegir entre:
+required / optional / hidden
+
+Porque no todos los proyectos necesitan mostrar las 9 siempre.
+
+Mi recomendación concreta para mejorar esa parte del producto sería esta:
+
+1. Add modes
+Basic Terms
+Standard Terms
+Extended Terms
+
+2. Make warranty configurable
+No hardcoded 1-year text
+
+3. Allow per-section toggle
+show/hide each clause
+
+4. Make boilerplate conditional by project type
+Bathroom / interior renovation / HVAC / plumbing / painting / flooring
+
+5. Simplify wording
+same protection, less dense text
+
+6. Fix overlap between sections
+reduce repetition

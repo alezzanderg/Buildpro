@@ -197,12 +197,26 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
     );
   };
 
-  // Check if any terms sections have content
-  const hasTerms = [
-    proposal.changeOrders, proposal.siteConditions, proposal.materials,
-    proposal.permits, proposal.access, proposal.cleanup,
-    proposal.warranty, proposal.cancellation, proposal.liability,
-  ].some(t => t?.trim());
+  // Parse terms visibility config
+  function termsVis(key: string): boolean {
+    if (!proposal.termsConfig) return true; // legacy: show all
+    try {
+      const cfg = JSON.parse(proposal.termsConfig) as Record<string, boolean>;
+      return cfg[key] !== false;
+    } catch { return true; }
+  }
+
+  // Only render terms section if enabled and has content
+  const TermsSection = ({ termKey, label, text }: { termKey: string; label: string; text: string | null | undefined }) => {
+    if (!termsVis(termKey)) return null;
+    return <TermsItem label={label} text={text} />;
+  };
+
+  // Show terms block only if at least one term is visible and has content
+  const hasVisibleTerms = [
+    "changeOrders", "siteConditions", "materials", "permits",
+    "access", "cleanup", "warranty", "cancellation", "liability"
+  ].some(k => termsVis(k) && (proposal as Record<string, unknown>)[k]);
 
   return (
     <Document>
@@ -266,19 +280,19 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
           <Section label="Payment Terms"         text={proposal.paymentTerms} />
 
           {/* ── Standard Terms (compact, smaller type) ────────── */}
-          {hasTerms && (
+          {hasVisibleTerms && (
             <View wrap={false}>
               <View style={s.termsDivider} />
               <Text style={s.termsTitle}>Terms &amp; Conditions</Text>
-              <TermsItem label="Change Orders"              text={proposal.changeOrders} />
-              <TermsItem label="Site Conditions"            text={proposal.siteConditions} />
-              <TermsItem label="Materials & Substitutions"  text={proposal.materials} />
-              <TermsItem label="Permits, Codes & Approvals" text={proposal.permits} />
-              <TermsItem label="Access & Jobsite Conditions" text={proposal.access} />
-              <TermsItem label="Cleanup & Disposal"         text={proposal.cleanup} />
-              <TermsItem label="Warranty / Guarantee"       text={proposal.warranty} />
-              <TermsItem label="Cancellation / Rescheduling" text={proposal.cancellation} />
-              <TermsItem label="Limitation of Liability"    text={proposal.liability} />
+              <TermsSection termKey="changeOrders"   label="Change Orders"               text={proposal.changeOrders} />
+              <TermsSection termKey="siteConditions" label="Site Conditions"             text={proposal.siteConditions} />
+              <TermsSection termKey="materials"      label="Materials & Substitutions"   text={proposal.materials} />
+              <TermsSection termKey="permits"        label="Permits, Codes & Approvals"  text={proposal.permits} />
+              <TermsSection termKey="access"         label="Access & Jobsite Conditions" text={proposal.access} />
+              <TermsSection termKey="cleanup"        label="Cleanup & Disposal"          text={proposal.cleanup} />
+              <TermsSection termKey="warranty"       label="Warranty / Guarantee"        text={proposal.warranty} />
+              <TermsSection termKey="cancellation"   label="Cancellation / Rescheduling" text={proposal.cancellation} />
+              <TermsSection termKey="liability"      label="Limitation of Liability"     text={proposal.liability} />
             </View>
           )}
 

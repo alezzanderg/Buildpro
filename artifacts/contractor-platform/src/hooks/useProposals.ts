@@ -42,6 +42,9 @@ export type ProposalDetail = {
   warranty:        string | null;
   cancellation:    string | null;
   liability:       string | null;
+  // Terms configuration
+  termsConfig:     string | null;   // JSON visibility map
+  warrantyPeriod:  string | null;
   // Legacy / internal
   terms:           string | null;
   notes:           string | null;
