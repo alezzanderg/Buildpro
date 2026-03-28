@@ -30,7 +30,7 @@ router.put("/settings", async (req, res) => {
   const {
     companyName, companyEmail, companyPhone, companyAddress,
     companyCity, companyState, companyZip, companyLicense,
-    companyWebsite, defaultTaxRate, defaultMarkup,
+    companyWebsite, defaultTaxRate, defaultMarkup, logoUrl,
   } = req.body;
 
   await getOrCreateSettings();
@@ -47,6 +47,7 @@ router.put("/settings", async (req, res) => {
     ...(companyWebsite !== undefined ? { companyWebsite } : {}),
     ...(defaultTaxRate !== undefined ? { defaultTaxRate: String(defaultTaxRate) } : {}),
     ...(defaultMarkup  !== undefined ? { defaultMarkup:  String(defaultMarkup)  } : {}),
+    ...(logoUrl        !== undefined ? { logoUrl }        : {}),
     updatedAt: new Date(),
   }).where(eq(settingsTable.id, 1)).returning();
 

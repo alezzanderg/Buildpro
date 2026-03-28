@@ -11,6 +11,7 @@ import dashboardRouter from "./dashboard.js";
 import proposalsRouter from "./proposals.js";
 import enhanceRouter from "./enhance.js";
 import settingsRouter from "./settings.js";
+import storageRouter from "./storage.js";
 
 const router: IRouter = Router();
 
@@ -26,5 +27,6 @@ router.use(dashboardRouter);
 router.use(proposalsRouter);
 router.use(enhanceRouter);
 router.use(settingsRouter);
+router.use(storageRouter);
 
 export default router;

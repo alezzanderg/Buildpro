@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useCompanySettings } from "@/hooks/useCompanySettings";
 import { useAuth } from "@workspace/replit-auth-web";
@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Building2, Save, RotateCcw, SlidersHorizontal, Percent,
   Loader2, User, Mail, AtSign, Lock, CheckCircle2,
+  Upload, ImageIcon, Trash2,
 } from "lucide-react";
 
 const TAX_PRESETS = [0, 6, 6.5, 7, 7.5, 8, 8.25, 8.5, 9, 9.5, 10];
@@ -203,6 +204,8 @@ export default function Settings() {
 
   const [form, setForm] = useState({ ...settings });
   const [initialized, setInitialized] = useState(false);
+  const [logoUploading, setLogoUploading] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!isLoading && !initialized) {
@@ -226,6 +229,56 @@ export default function Settings() {
       toast({ title: "Settings saved", description: "Changes will appear on all new PDFs." });
     } catch {
       toast({ title: "Failed to save settings", variant: "destructive" });
+    }
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "Please select an image file", variant: "destructive" });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({ title: "Image must be under 5 MB", variant: "destructive" });
+      return;
+    }
+    setLogoUploading(true);
+    try {
+      const metaRes = await fetch(`${BASE_URL}/api/storage/uploads/request-url`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ name: file.name, size: file.size, contentType: file.type }),
+      });
+      if (!metaRes.ok) throw new Error("Failed to get upload URL");
+      const { uploadURL, objectPath } = await metaRes.json();
+
+      const uploadRes = await fetch(uploadURL, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+      if (!uploadRes.ok) throw new Error("Upload failed");
+
+      const updated = await save({ ...settings, logoUrl: objectPath });
+      setForm(f => ({ ...f, logoUrl: (updated as typeof settings).logoUrl ?? objectPath }));
+      toast({ title: "Logo uploaded", description: "Your logo will appear on all new PDFs." });
+    } catch (err) {
+      toast({ title: "Logo upload failed", description: String(err), variant: "destructive" });
+    } finally {
+      setLogoUploading(false);
+      if (logoInputRef.current) logoInputRef.current.value = "";
+    }
+  };
+
+  const handleRemoveLogo = async () => {
+    try {
+      await save({ ...settings, logoUrl: "" });
+      setForm(f => ({ ...f, logoUrl: "" }));
+      toast({ title: "Logo removed" });
+    } catch {
+      toast({ title: "Failed to remove logo", variant: "destructive" });
     }
   };
 
@@ -264,6 +317,71 @@ export default function Settings() {
 
             {/* ── COMPANY TAB ─────────────────────────────────── */}
             <TabsContent value="company" className="space-y-6">
+
+              {/* Logo Upload */}
+              <div className="bg-card border border-border rounded-xl p-6">
+                <div className="flex items-center gap-3 pb-4 border-b border-border mb-5">
+                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <ImageIcon className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="font-semibold text-foreground">Company Logo</h2>
+                    <p className="text-xs text-muted-foreground">Appears in the header of every PDF — PNG or JPG, max 5 MB</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-5">
+                  {/* Preview */}
+                  <div className="w-24 h-24 rounded-xl border-2 border-dashed border-border bg-secondary/30 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    {settings.logoUrl ? (
+                      <img
+                        src={`${BASE_URL}/api/storage${settings.logoUrl}`}
+                        alt="Company logo"
+                        className="w-full h-full object-contain p-1"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center gap-1 text-muted-foreground">
+                        <ImageIcon className="w-8 h-8 opacity-30" />
+                        <span className="text-xs opacity-50">No logo</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex flex-col gap-2">
+                    <input
+                      ref={logoInputRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/jpg,image/webp,image/svg+xml"
+                      className="hidden"
+                      onChange={handleLogoUpload}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="gap-2 border-border"
+                      disabled={logoUploading}
+                      onClick={() => logoInputRef.current?.click()}
+                    >
+                      {logoUploading
+                        ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading…</>
+                        : <><Upload className="w-4 h-4" /> {settings.logoUrl ? "Replace Logo" : "Upload Logo"}</>
+                      }
+                    </Button>
+                    {settings.logoUrl && !logoUploading && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="gap-2 text-destructive hover:text-destructive"
+                        onClick={handleRemoveLogo}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Remove
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
 
               <div className="bg-card border border-border rounded-xl p-6 space-y-5">
                 <div className="flex items-center gap-3 pb-4 border-b border-border">

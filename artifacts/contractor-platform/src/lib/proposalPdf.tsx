@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, StyleSheet, pdf } from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet, pdf, Image } from "@react-pdf/renderer";
 import type { ProposalDetail } from "@/hooks/useProposals";
 import { loadCompanySettings } from "@/hooks/useCompanySettings";
 import type { PdfTemplate } from "./estimatePdf";
@@ -79,8 +79,35 @@ function extractHighlights(text: string | null | undefined, max = 5): string[] {
     .map((n) => n.text);
 }
 
+// ── Logo helpers ──────────────────────────────────────────────────────
+const BASE_URL = (typeof import.meta !== "undefined" ? import.meta.env.BASE_URL : "/").replace(/\/+$/, "");
+
+export async function fetchLogoDataUrl(objectPath: string): Promise<string | undefined> {
+  if (!objectPath) return undefined;
+  try {
+    const url = `${BASE_URL}/api/storage${objectPath}`;
+    const res = await fetch(url);
+    if (!res.ok) return undefined;
+    const blob = await res.blob();
+    return new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = () => resolve(undefined);
+      reader.readAsDataURL(blob);
+    });
+  } catch { return undefined; }
+}
+
 // ── Proposal PDF Component ────────────────────────────────────────────
-export function ProposalPdfDocument({ proposal, template = "classic" }: { proposal: ProposalDetail; template?: PdfTemplate }) {
+export function ProposalPdfDocument({
+  proposal,
+  template = "classic",
+  logoSrc,
+}: {
+  proposal: ProposalDetail;
+  template?: PdfTemplate;
+  logoSrc?: string;
+}) {
   const co = loadCompanySettings();
   const th = getTheme(template);
 
@@ -91,6 +118,7 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
     logoRow:      { flexDirection: "row", alignItems: "center", marginBottom: 8 },
     logoBox:      { width: 28, height: 28, backgroundColor: th.accent, borderRadius: 5, alignItems: "center", justifyContent: "center", marginRight: 8 },
     logoLtr:      { color: "#0F172A", fontSize: 15, fontFamily: B },
+    logoImg:      { width: 44, height: 44, marginRight: 10, objectFit: "contain" },
     coName:       { fontSize: 16, fontFamily: B, color: th.headerText },
     coDet:        { fontSize: 7, color: th.mutedText, marginTop: 2, lineHeight: 1.5 },
     docLabel:     { fontSize: 28, fontFamily: B, color: th.accent, letterSpacing: 3, textAlign: "right" },
@@ -227,7 +255,10 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
           <View style={s.hdrRow}>
             <View>
               <View style={s.logoRow}>
-                <View style={s.logoBox}><Text style={s.logoLtr}>{(co.name || "P")[0]}</Text></View>
+                {logoSrc
+                  ? <Image src={logoSrc} style={s.logoImg} />
+                  : <View style={s.logoBox}><Text style={s.logoLtr}>{(co.name || "P")[0]}</Text></View>
+                }
                 <Text style={s.coName}>{co.name}</Text>
               </View>
               {co.address && <Text style={s.coDet}>{co.address}{co.city ? `, ${co.city}` : ""}{co.state ? `, ${co.state}` : ""} {co.zip}</Text>}
@@ -351,7 +382,9 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
 }
 
 export async function downloadProposalPdf(proposal: ProposalDetail, template: PdfTemplate = "classic") {
-  const blob = await pdf(<ProposalPdfDocument proposal={proposal} template={template} />).toBlob();
+  const co = loadCompanySettings();
+  const logoSrc = co.logoUrl ? await fetchLogoDataUrl(co.logoUrl) : undefined;
+  const blob = await pdf(<ProposalPdfDocument proposal={proposal} template={template} logoSrc={logoSrc} />).toBlob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

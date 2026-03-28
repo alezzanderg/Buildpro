@@ -20,8 +20,9 @@ import {
 } from "lucide-react";
 import { useGetProposal, useUpdateProposal } from "@/hooks/useProposals";
 import { useListClients } from "@workspace/api-client-react";
-import { downloadProposalPdf, ProposalPdfDocument, PDF_TEMPLATES } from "@/lib/proposalPdf";
+import { downloadProposalPdf, ProposalPdfDocument, PDF_TEMPLATES, fetchLogoDataUrl } from "@/lib/proposalPdf";
 import type { PdfTemplate } from "@/lib/proposalPdf";
+import { useCompanySettings } from "@/hooks/useCompanySettings";
 import type { ProposalDetail as ProposalDetailType } from "@/hooks/useProposals";
 import { PDFViewer } from "@react-pdf/renderer";
 
@@ -118,13 +119,14 @@ function parseTermsConfig(raw: string | null | undefined): Record<string, boolea
 
 // ── Live PDF preview panel ────────────────────────────────────────────
 function PdfPreviewPanel({
-  proposal, template, onTemplateChange, onDownload, downloading,
+  proposal, template, onTemplateChange, onDownload, downloading, logoSrc,
 }: {
   proposal: ProposalDetailType;
   template: PdfTemplate;
   onTemplateChange: (t: PdfTemplate) => void;
   onDownload: () => void;
   downloading: boolean;
+  logoSrc?: string;
 }) {
   return (
     <div className="flex flex-col h-full border-l border-border bg-card">
@@ -146,7 +148,7 @@ function PdfPreviewPanel({
       </div>
       <div className="flex-1 overflow-hidden">
         <PDFViewer width="100%" height="100%" showToolbar={false}>
-          <ProposalPdfDocument proposal={proposal} template={template} />
+          <ProposalPdfDocument proposal={proposal} template={template} logoSrc={logoSrc} />
         </PDFViewer>
       </div>
       <div className="p-3 border-t border-border flex-shrink-0">
@@ -208,6 +210,13 @@ export default function ProposalDetail() {
   const { data: proposal, isLoading } = useGetProposal(proposalId, { enabled: !!proposalId });
   const { data: clients = [] } = useListClients();
   const updateProposal = useUpdateProposal();
+  const { settings: companySettings } = useCompanySettings();
+
+  const [logoSrc, setLogoSrc] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    if (!companySettings.logoUrl) { setLogoSrc(undefined); return; }
+    fetchLogoDataUrl(companySettings.logoUrl).then(setLogoSrc);
+  }, [companySettings.logoUrl]);
 
   const [form, setForm] = useState<FormState | null>(null);
   const [termsVisible, setTermsVisible] = useState<Record<string, boolean>>(BASIC_VISIBLE);
@@ -799,6 +808,7 @@ export default function ProposalDetail() {
                 onTemplateChange={setPdfTemplate}
                 onDownload={handleDownloadPdf}
                 downloading={pdfGenerating}
+                logoSrc={logoSrc}
               />
             </div>
           )}

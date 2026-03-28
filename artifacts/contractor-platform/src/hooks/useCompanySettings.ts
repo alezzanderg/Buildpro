@@ -11,6 +11,7 @@ export interface CompanySettings {
   zip: string;
   license: string;
   website: string;
+  logoUrl: string;
   defaultTaxRate: number;
   defaultMarkup: number;
 }
@@ -30,6 +31,7 @@ function apiToLocal(api: Record<string, unknown>): CompanySettings {
     zip:            (api.companyZip     as string) ?? "",
     license:        (api.companyLicense as string) ?? "",
     website:        (api.companyWebsite as string) ?? "",
+    logoUrl:        (api.logoUrl        as string) ?? "",
     defaultTaxRate: Number(api.defaultTaxRate ?? 0),
     defaultMarkup:  Number(api.defaultMarkup  ?? 0),
   };
@@ -46,6 +48,7 @@ function localToApi(s: CompanySettings) {
     companyZip:     s.zip,
     companyLicense: s.license,
     companyWebsite: s.website,
+    logoUrl:        s.logoUrl,
     defaultTaxRate: s.defaultTaxRate,
     defaultMarkup:  s.defaultMarkup,
   };
@@ -55,7 +58,7 @@ function localToApi(s: CompanySettings) {
 let settingsCache: CompanySettings = {
   name: "ProBuilder", email: "", phone: "",
   address: "", city: "", state: "", zip: "",
-  license: "", website: "",
+  license: "", website: "", logoUrl: "",
   defaultTaxRate: 0, defaultMarkup: 0,
 };
 
@@ -101,7 +104,6 @@ export function useCompanySettings() {
     if (!raw) return;
     try {
       const old = JSON.parse(raw) as Partial<CompanySettings>;
-      // Only migrate if they actually saved something meaningful
       if (!old.name && !old.defaultTaxRate && !old.defaultMarkup) return;
       const merged: CompanySettings = {
         name:           old.name           ?? "",
@@ -113,6 +115,7 @@ export function useCompanySettings() {
         zip:            old.zip            ?? "",
         license:        old.license        ?? "",
         website:        old.website        ?? "",
+        logoUrl:        old.logoUrl        ?? "",
         defaultTaxRate: old.defaultTaxRate ?? 0,
         defaultMarkup:  old.defaultMarkup  ?? 0,
       };

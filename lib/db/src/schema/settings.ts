@@ -11,6 +11,7 @@ export const settingsTable = pgTable("settings", {
   companyZip: text("company_zip").notNull().default(""),
   companyLicense: text("company_license").notNull().default(""),
   companyWebsite: text("company_website").notNull().default(""),
+  logoUrl: text("logo_url").default(""),
   defaultTaxRate: numeric("default_tax_rate", { precision: 8, scale: 3 }).notNull().default("0"),
   defaultMarkup: numeric("default_markup", { precision: 8, scale: 3 }).notNull().default("0"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
