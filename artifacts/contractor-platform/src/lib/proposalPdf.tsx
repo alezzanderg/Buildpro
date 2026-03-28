@@ -69,6 +69,16 @@ function parseMarkdown(raw: string): MdNode[] {
   return nodes;
 }
 
+// ── Extract first N headline items from markdown text ─────────────────
+function extractHighlights(text: string | null | undefined, max = 5): string[] {
+  if (!text?.trim()) return [];
+  return parseMarkdown(text)
+    .filter((n): n is Extract<MdNode, { kind: "h2" | "bullet" }> =>
+      n.kind === "h2" || n.kind === "bullet")
+    .slice(0, max)
+    .map((n) => n.text);
+}
+
 // ── Proposal PDF Component ────────────────────────────────────────────
 export function ProposalPdfDocument({ proposal, template = "classic" }: { proposal: ProposalDetail; template?: PdfTemplate }) {
   const co = loadCompanySettings();
@@ -109,6 +119,11 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
     mdBulletRow: { flexDirection: "row", marginBottom: 3, paddingLeft: 4 },
     mdBulletDot: { fontSize: 8.5, color: th.accent, marginRight: 7, lineHeight: 1.75, fontFamily: B },
     mdBulletTx:  { fontSize: 8.5, color: th.bodyText, lineHeight: 1.75, flex: 1 },
+    // Project overview band (cover summary)
+    overviewBand: { backgroundColor: th.sectionBg, borderRadius: 6, padding: 16, marginBottom: 24, borderLeftWidth: 3, borderLeftColor: th.accent },
+    overviewTitle: { fontSize: 14, fontFamily: B, color: th.bodyText, marginBottom: 6 },
+    overviewSubs:  { fontSize: 8, color: th.mutedText, lineHeight: 1.8 },
+    overviewDot:   { color: th.accent },
     // Signature
     sigSection:{ marginTop: 32, marginBottom: 20 },
     sigRow:    { flexDirection: "row", gap: 0, marginTop: 10 },
@@ -198,18 +213,30 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
         {/* Body */}
         <View style={s.body}>
 
-          {/* Client + Project */}
+          {/* Client + Project — no duplicate project name under client */}
           <View style={s.cliBand}>
             <View>
               <Text style={s.cliLbl}>Prepared For</Text>
               <Text style={s.cliName}>{proposal.clientName ?? "Client"}</Text>
-              {proposal.projectName && <Text style={s.cliDet}>{proposal.projectName}</Text>}
             </View>
             <View>
               <Text style={[s.cliLbl, { textAlign: "right" }]}>Project</Text>
               <Text style={[s.cliName, { textAlign: "right" }]}>{proposal.projectName}</Text>
             </View>
           </View>
+
+          {/* Project Overview / Scope at a Glance */}
+          {(() => {
+            const highlights = extractHighlights(proposal.scopeOfWork);
+            if (!highlights.length) return null;
+            return (
+              <View style={s.overviewBand}>
+                <Text style={s.overviewSubs}>
+                  {highlights.join("  ·  ")}
+                </Text>
+              </View>
+            );
+          })()}
 
           {/* Text Sections — markdown rendered cleanly */}
           <Section label="Introduction"    text={proposal.introText} />
@@ -259,9 +286,13 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
           </View>
         </View>
 
-        {/* Footer */}
+        {/* Footer — matches the actual valid until date to avoid contradiction */}
         <View style={s.ftr} fixed>
-          <Text style={s.ftrTx}>This proposal is valid for 30 days from the date of issue. Prices subject to change.</Text>
+          <Text style={s.ftrTx}>
+            {proposal.validUntil
+              ? `This proposal expires on ${dt(proposal.validUntil)}. Prices subject to change.`
+              : "Prices subject to change."}
+          </Text>
           <Text style={s.ftrBr}>{co.name}</Text>
         </View>
       </Page>
