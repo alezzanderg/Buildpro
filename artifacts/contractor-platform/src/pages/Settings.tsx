@@ -229,7 +229,7 @@ export default function Settings() {
                         type="number"
                         min={0}
                         max={30}
-                        step={0.25}
+                        step={0.001}
                         value={form.defaultTaxRate}
                         onChange={(e) => set("defaultTaxRate", parseFloat(e.target.value) || 0)}
                         className="bg-background border-border pr-8"
