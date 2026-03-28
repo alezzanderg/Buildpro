@@ -15,7 +15,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import {
   ArrowLeft, Save, Download, Eye, EyeOff, ChevronDown,
-  Send, Check, X, Loader2, Sparkles, Palette,
+  Send, Check, X, Loader2, Sparkles, Palette, ClipboardCopy,
 } from "lucide-react";
 import { useGetProposal, useUpdateProposal } from "@/hooks/useProposals";
 import { useListClients } from "@workspace/api-client-react";
@@ -287,6 +287,26 @@ export default function ProposalDetail() {
     }
   }
 
+  // Copy all section text to clipboard
+  async function copyAllText() {
+    if (!form) return;
+    const lines: string[] = [];
+    for (const key of TEXT_SECTIONS) {
+      const text = form[key]?.trim();
+      if (text) {
+        lines.push(`--- ${sectionLabel(key).toUpperCase()} ---`);
+        lines.push(text);
+        lines.push("");
+      }
+    }
+    if (!lines.length) {
+      toast({ title: "No content to copy yet", variant: "destructive" });
+      return;
+    }
+    await navigator.clipboard.writeText(lines.join("\n"));
+    toast({ title: "Copied to clipboard", description: "All sections copied as plain text." });
+  }
+
   // Enhance all filled sections in parallel
   async function enhanceAll() {
     if (!form) return;
@@ -384,6 +404,18 @@ export default function ProposalDetail() {
                 <DropdownMenuItem onClick={() => setStatus("rejected")} className="text-destructive"><X className="w-3.5 h-3.5 mr-2" />Mark Rejected</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* Copy all text (debug) */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 text-muted-foreground hover:text-foreground"
+              onClick={copyAllText}
+              title="Copy all section text to clipboard"
+            >
+              <ClipboardCopy className="w-4 h-4" />
+              <span className="hidden sm:inline">Copy All</span>
+            </Button>
 
             {/* Enhance All */}
             <Button
