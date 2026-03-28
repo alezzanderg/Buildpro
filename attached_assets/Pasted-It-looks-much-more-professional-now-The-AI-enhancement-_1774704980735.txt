@@ -1,0 +1,70 @@
+It looks **much more professional** now. The AI enhancement clearly made it feel more premium, structured, and client-facing. The sections read cleaner, the tone is stronger, and the terms are way more complete than before. 
+
+But I do see a few important issues to fix in the system:
+
+The biggest one is on **page 1**. Right under **Project: Living Room Renovation**, a chunk of scope text appears before the **Introduction**:
+“Will protect floors… Will isolate the work area… Will remove existing materials…”
+That should not be there. That looks like a rendering or section-order bug in your template mapper, where part of the **Scope of Work** got injected into the header/cover page area. 
+
+Another issue is duplication in headings. On page 2 it shows:
+**S C O P E O F W O R K**
+and then again:
+**SCOPE OF WORK**
+Same problem on other pages like **Timeline** and **Payment Terms** where the styled heading appears, then a second plain heading below it. That means your PDF template is probably printing the section title automatically, while the AI content is also returning the title inside the section body. You should choose one or the other, not both. 
+
+The AI also became a little too aggressive in a few places. For example, it added stronger legal/commercial clauses such as:
+one-year workmanship warranty, limitation of liability, cancellation/rescheduling language, permits/codes/approvals, substitutions, and access/jobsite conditions. Those make the proposal look strong, but they were not in the original user input. If your goal is that “Enhance with AI” should only polish existing text, then the current prompt is still allowing too much expansion. 
+
+Another thing: page 5 says:
+**Total Project Price: Not provided in the current scope.**
+That sounds awkward in a real client proposal. It makes the document feel unfinished. If price is empty, it would look better to either hide that line entirely or replace it with a softer placeholder like:
+**Total Project Price: To be provided separately**
+or just omit it until price exists. 
+
+Visually, the document is definitely better, but it is now a bit long for a simple living room renovation. Seven pages can feel heavy unless this is meant to be a very formal contract-style proposal. 
+
+My practical verdict:
+
+**What is good**
+The tone is professional
+The introduction is stronger
+The scope is cleaner and better organized
+The exclusions and terms now feel more serious
+The document looks more like something a real contractor platform would generate 
+
+**What needs fixing**
+Remove section text leaking into page 1
+Stop duplicate headings
+Do not let AI invent warranty/legal/payment-related clauses unless enabled
+Hide “Total Project Price: Not provided…” when empty
+Consider a shorter mode and a detailed mode 
+
+The best product setup would be:
+
+**Standard Proposal Mode**
+Shorter, cleaner, 3 to 4 pages
+
+**Detailed Proposal + Terms Mode**
+Full version like this, 5 to 7 pages
+
+And for your AI behavior, I would tighten the prompt so it does this:
+improve wording, organize bullets, strengthen intro, polish terms already written
+but **not add new legal sections unless the platform explicitly asks for “expanded terms.”**
+
+A very important fix for the prompt would be something like:
+
+```txt
+Do not add new sections that were not present in the user's input unless the platform explicitly requests expanded terms and conditions.
+Do not add warranty periods, liability clauses, cancellation clauses, permit exclusions, or legal protections unless they already exist in the source content or the platform has enabled extended legal/commercial terms.
+Return section body text only when the platform already renders the heading separately.
+```
+
+And for your renderer:
+
+If your template already prints section titles, then the AI should only return the body content, not the heading itself.
+
+So yes — **the direction is very good**.
+You’re close.
+What you have now proves the concept works, but it also exposed the exact two big system issues: **section duplication** and **AI over-expansion**.
+
+

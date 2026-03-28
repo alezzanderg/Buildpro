@@ -255,19 +255,6 @@ export function ProposalPdfDocument({ proposal, template = "classic" }: { propos
             </View>
           </View>
 
-          {/* Scope at a Glance */}
-          {(() => {
-            const highlights = extractHighlights(proposal.scopeOfWork);
-            if (!highlights.length) return null;
-            return (
-              <View style={s.overviewBand}>
-                <Text style={s.overviewSubs}>
-                  {highlights.join("  ·  ")}
-                </Text>
-              </View>
-            );
-          })()}
-
           {/* ── Project sections ─────────────────────────────── */}
           <Section label="Introduction"          text={proposal.introText} />
           <Section label="Project Overview"      text={proposal.projectOverview} />
