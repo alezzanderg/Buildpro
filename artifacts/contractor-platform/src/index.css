@@ -59,41 +59,42 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-:root {
-  /* Industrial Dark Mode by Default */
+/* ── Dark Mode (default) ─────────────────────────────────────────────── */
+:root,
+:root.dark {
+  /* Industrial Dark */
   --background: 240 10% 4%;
   --foreground: 0 0% 98%;
-  
+
   --card: 240 10% 6%;
   --card-foreground: 0 0% 98%;
   --card-border: 240 10% 12%;
-  
+
   --popover: 240 10% 6%;
   --popover-foreground: 0 0% 98%;
   --popover-border: 240 10% 12%;
-  
-  /* Construction/Safety Yellow Primary */
+
+  /* Construction/Safety Yellow */
   --primary: 48 96% 53%;
   --primary-foreground: 240 10% 4%;
-  
-  /* Slate Secondary */
+
   --secondary: 240 5% 15%;
   --secondary-foreground: 0 0% 98%;
-  
+
   --muted: 240 5% 12%;
   --muted-foreground: 240 5% 65%;
-  
+
   /* Electric Blue Accent */
   --accent: 217 91% 60%;
   --accent-foreground: 0 0% 100%;
-  
+
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
-  
+
   --border: 240 10% 15%;
   --input: 240 10% 15%;
   --ring: 48 96% 53%;
-  
+
   --sidebar: 240 10% 4%;
   --sidebar-foreground: 240 5% 70%;
   --sidebar-border: 240 10% 12%;
@@ -102,6 +103,52 @@
   --sidebar-accent: 240 10% 10%;
   --sidebar-accent-foreground: 0 0% 98%;
   --sidebar-ring: 48 96% 53%;
+
+  --radius: 0.5rem;
+}
+
+/* ── Light Mode ──────────────────────────────────────────────────────── */
+:root.light {
+  /* Clean Professional Light */
+  --background: 210 20% 97%;
+  --foreground: 220 13% 12%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 220 13% 12%;
+  --card-border: 220 13% 88%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 220 13% 12%;
+  --popover-border: 220 13% 88%;
+
+  /* Gold — slightly deeper for light background readability */
+  --primary: 43 96% 40%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 220 13% 93%;
+  --secondary-foreground: 220 13% 12%;
+
+  --muted: 220 13% 93%;
+  --muted-foreground: 220 9% 40%;
+
+  --accent: 217 85% 52%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 84% 54%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 220 13% 88%;
+  --input: 220 13% 88%;
+  --ring: 43 96% 40%;
+
+  --sidebar: 220 20% 95%;
+  --sidebar-foreground: 220 9% 35%;
+  --sidebar-border: 220 13% 88%;
+  --sidebar-primary: 43 96% 40%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 13% 91%;
+  --sidebar-accent-foreground: 220 13% 12%;
+  --sidebar-ring: 43 96% 40%;
 
   --radius: 0.5rem;
 }
@@ -121,7 +168,7 @@
   }
 }
 
-/* Custom Scrollbar for Industrial Look */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -137,13 +184,13 @@
   background: hsl(var(--muted-foreground));
 }
 
-/* Print Styles for Estimates & Invoices */
+/* Print Styles */
 @media print {
   @page {
     margin: 0;
     size: auto;
   }
-  
+
   body {
     background: white !important;
     color: black !important;
@@ -159,7 +206,6 @@
     display: block !important;
   }
 
-  /* Force light theme colors for printing */
   .print-area {
     --background: 0 0% 100%;
     --foreground: 240 10% 4%;
@@ -175,13 +221,4 @@
   .print-area * {
     border-color: #e5e7eb !important;
   }
-
-  .print-area th {
-    background-color: #f3f4f6 !important;
-    color: #111827 !important;
-  }
-}
-
-.print-only {
-  display: none;
 }
