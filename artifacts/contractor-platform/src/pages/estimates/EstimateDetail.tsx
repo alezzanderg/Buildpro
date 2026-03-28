@@ -75,7 +75,8 @@ export default function EstimateDetail() {
   };
 
   const handlePrint = () => {
-    window.print();
+    const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+    window.open(`${base}/estimates/${estimateId}/print`, "_blank");
   };
 
   const handleConvertToInvoice = () => {

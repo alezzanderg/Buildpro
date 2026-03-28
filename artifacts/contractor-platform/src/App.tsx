@@ -8,6 +8,7 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "./pages/Dashboard";
 import EstimatesList from "./pages/estimates/EstimatesList";
 import EstimateDetail from "./pages/estimates/EstimateDetail";
+import EstimatePrint from "./pages/estimates/EstimatePrint";
 import InvoicesList from "./pages/invoices/InvoicesList";
 import MaterialsList from "./pages/materials/MaterialsList";
 import ClientsList from "./pages/clients/ClientsList";
@@ -20,6 +21,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Dashboard} />
       <Route path="/estimates" component={EstimatesList} />
+      <Route path="/estimates/:id/print" component={EstimatePrint} />
       <Route path="/estimates/:id" component={EstimateDetail} />
       <Route path="/invoices" component={InvoicesList} />
       <Route path="/materials" component={MaterialsList} />
