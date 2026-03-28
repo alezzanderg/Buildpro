@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Download, ArrowLeft, Loader2, Palette } from "lucide-react";
 import { useGetProposal } from "@/hooks/useProposals";
 import { ProposalPdfDocument, downloadProposalPdf, PDF_TEMPLATES } from "@/lib/proposalPdf";
-import { useCompanySettings } from "@/hooks/useCompanySettings";
+import { useCompanySettings, useLogoDataUrl } from "@/hooks/useCompanySettings";
 import type { PdfTemplate } from "@/lib/proposalPdf";
 
 export default function ProposalPreview() {
@@ -20,11 +20,7 @@ export default function ProposalPreview() {
   });
 
   const { settings } = useCompanySettings();
-
-  // Pass absolute URL directly — react-pdf's Image component fetches it in its worker
-  const logoSrc = settings.logoUrl
-    ? `${window.location.origin}/api/storage${settings.logoUrl}`
-    : undefined;
+  const logoSrc = useLogoDataUrl(settings.logoUrl);
 
   async function handleDownload() {
     if (!proposal) return;

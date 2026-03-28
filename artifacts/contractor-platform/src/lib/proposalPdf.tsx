@@ -1,6 +1,6 @@
 import { Document, Page, Text, View, StyleSheet, pdf, Image } from "@react-pdf/renderer";
 import type { ProposalDetail } from "@/hooks/useProposals";
-import { loadCompanySettings } from "@/hooks/useCompanySettings";
+import { loadCompanySettings, fetchLogoDataUrl } from "@/hooks/useCompanySettings";
 import type { PdfTemplate } from "./estimatePdf";
 
 export { PDF_TEMPLATES } from "./estimatePdf";
@@ -364,9 +364,7 @@ export function ProposalPdfDocument({
 
 export async function downloadProposalPdf(proposal: ProposalDetail, template: PdfTemplate = "classic") {
   const co = loadCompanySettings();
-  const logoSrc = co.logoUrl
-    ? `${window.location.origin}/api/storage${co.logoUrl}`
-    : undefined;
+  const logoSrc = co.logoUrl ? await fetchLogoDataUrl() : undefined;
   const blob = await pdf(<ProposalPdfDocument proposal={proposal} template={template} logoSrc={logoSrc} />).toBlob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");

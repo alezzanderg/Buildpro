@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export interface CompanySettings {
   name: string;
@@ -71,6 +71,65 @@ fetch(`${API}/settings`)
 /** Synchronous read used by PDF renderers. Always returns the latest fetched values. */
 export function loadCompanySettings(): CompanySettings {
   return settingsCache;
+}
+
+/**
+ * Convert any image data URL to PNG using the browser Canvas API.
+ * react-pdf / PDFKit only supports JPEG and PNG — WebP, AVIF, etc. will
+ * silently fail to render. This ensures we always give react-pdf a PNG.
+ */
+async function toPngDataUrl(dataUrl: string): Promise<string> {
+  if (!dataUrl) return dataUrl;
+  // Already PNG or JPEG — return as-is
+  if (dataUrl.startsWith("data:image/jpeg") || dataUrl.startsWith("data:image/jpg") || dataUrl.startsWith("data:image/png")) {
+    return dataUrl;
+  }
+  return new Promise<string>((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) { resolve(dataUrl); return; }
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
+  });
+}
+
+/**
+ * Fetch the logo as a base64 data URL from the server.
+ * The server reads it from object storage and returns it pre-encoded.
+ * We then normalise to PNG so react-pdf (PDFKit) can always embed it.
+ */
+export async function fetchLogoDataUrl(): Promise<string | undefined> {
+  try {
+    const res = await fetch(`${API}/settings/logo-data`);
+    if (!res.ok) return undefined;
+    const json = await res.json() as { dataUrl: string | null };
+    if (!json.dataUrl) return undefined;
+    return await toPngDataUrl(json.dataUrl);
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * React hook — returns the logo as a base64 data URL.
+ * Re-fetches whenever logoUrl changes (e.g. right after an upload).
+ */
+export function useLogoDataUrl(logoUrl: string): string | undefined {
+  const [dataUrl, setDataUrl] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    if (!logoUrl) { setDataUrl(undefined); return; }
+    let cancelled = false;
+    fetchLogoDataUrl().then(url => { if (!cancelled) setDataUrl(url); });
+    return () => { cancelled = true; };
+  }, [logoUrl]);
+  return dataUrl;
 }
 
 // ── API helper ────────────────────────────────────────────────────────
