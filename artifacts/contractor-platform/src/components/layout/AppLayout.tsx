@@ -10,7 +10,8 @@ import {
   Settings,
   Bell,
   Menu,
-  X
+  X,
+  FileCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -20,6 +21,7 @@ interface AppLayoutProps {
 
 const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/proposals", label: "Proposals", icon: FileCheck },
   { href: "/estimates", label: "Estimates", icon: FileText },
   { href: "/invoices", label: "Invoices", icon: Receipt },
   { href: "/materials", label: "Materials", icon: Package },

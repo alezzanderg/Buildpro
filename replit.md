@@ -42,11 +42,13 @@ A full-stack contractor estimation platform called "ProBuilder".
 
 ### Features
 - **Dashboard**: Revenue, profit, pending estimates, overdue invoices, Revenue & Profit Trend chart
+- **Proposals**: Create rich-text proposals (PROP-XXXX) with editable sections: Introduction, Scope of Work, Deliverables, Timeline, Payment Terms, Terms & Conditions. Status workflow (draft → sent → accepted → rejected). PDF generation with 6 templates. Auto-save with 1.5s debounce.
 - **Estimates**: Create/edit estimates with line items (labor/material/subcontractor/other), markup %, tax %, live profit calculation, status workflow (draft → sent → approved → invoiced), PDF generation
 - **Invoices**: Convert estimates to invoices, track payments (mark paid/partial), status workflow (draft → sent → paid → overdue)
 - **Materials Database**: Track material prices with price history, filter by supplier/category, link to Home Depot, Lowe's, etc.
 - **Clients**: CRUD for client records (name, email, phone, address)
 - **Suppliers**: Manage suppliers (pre-seeded: Home Depot, Lowe's, 84 Lumber, Ferguson, Grainger, ABC Supply)
+- **Settings**: Company info (name, address, phone, email, license), Default Tax Rate & Markup with preset quick-select buttons
 
 ### Database Schema
 - `clients` - Client records
@@ -56,6 +58,7 @@ A full-stack contractor estimation platform called "ProBuilder".
 - `estimates` - Estimate header (status, totals, markup, tax, profit margin)
 - `line_items` - Estimate line items (labor/material/subcontractor/other)
 - `invoices` - Invoice records linked to estimates
+- `proposals` - Proposal documents (PROP-XXXX) with rich text sections
 
 ### API Routes (all under /api)
 - `GET/POST /clients`, `GET/PUT/DELETE /clients/:id`
@@ -63,7 +66,19 @@ A full-stack contractor estimation platform called "ProBuilder".
 - `GET/POST /materials`, `PUT/DELETE /materials/:id`, `GET /materials/:id/price-history`
 - `GET/POST /estimates`, `GET/PUT/DELETE /estimates/:id`, `POST /estimates/:id/convert-to-invoice`, `POST/PUT/DELETE /estimates/:id/line-items/:lineItemId`
 - `GET/POST /invoices`, `GET/PUT /invoices/:id`
+- `GET/POST /proposals`, `GET/PUT/DELETE /proposals/:id`
 - `GET /dashboard/stats`
+
+### PDF Templates (shared across Proposals and Estimates)
+- File: `src/lib/estimatePdf.tsx` — 6 templates (Classic, Modern, Executive, Slate, Minimal, Blueprint)
+- File: `src/lib/proposalPdf.tsx` — proposal-specific layout reusing same 6 template color schemes
+- Fonts: Helvetica (R), Helvetica-Bold (B), Courier (M) — no Font.register needed
+- Markup % is never shown to client; only line items → Tax → Project Total
+
+### Key Frontend Patterns
+- Proposals use custom React Query hooks (`useProposals.ts`) with direct fetch — no codegen overhead
+- Company settings stored in localStorage as `probuilder_company_settings`
+- Default tax/markup applied when creating new estimates via `loadCompanySettings()`
 
 ### Running
 - API Server: `pnpm --filter @workspace/api-server run dev`

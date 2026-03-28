@@ -14,6 +14,8 @@ import MaterialsList from "./pages/materials/MaterialsList";
 import ClientsList from "./pages/clients/ClientsList";
 import SuppliersList from "./pages/suppliers/SuppliersList";
 import Settings from "./pages/Settings";
+import ProposalsList from "./pages/proposals/ProposalsList";
+import ProposalDetail from "./pages/proposals/ProposalDetail";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +23,8 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard} />
+      <Route path="/proposals" component={ProposalsList} />
+      <Route path="/proposals/:id" component={ProposalDetail} />
       <Route path="/estimates" component={EstimatesList} />
       <Route path="/estimates/:id/print" component={EstimatePrint} />
       <Route path="/estimates/:id" component={EstimateDetail} />

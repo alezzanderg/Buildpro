@@ -6,6 +6,7 @@ import materialsRouter from "./materials.js";
 import estimatesRouter from "./estimates.js";
 import invoicesRouter from "./invoices.js";
 import dashboardRouter from "./dashboard.js";
+import proposalsRouter from "./proposals.js";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(materialsRouter);
 router.use(estimatesRouter);
 router.use(invoicesRouter);
 router.use(dashboardRouter);
+router.use(proposalsRouter);
 
 export default router;
