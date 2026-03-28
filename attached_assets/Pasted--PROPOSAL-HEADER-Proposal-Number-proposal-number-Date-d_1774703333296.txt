@@ -1,0 +1,152 @@
+--- PROPOSAL HEADER ---
+Proposal Number: {{proposal_number}}
+Date: {{date}}
+Valid Until: {{valid_until}}
+Prepared For: {{client_name}}
+Project Name: {{project_name}}
+Project Address: {{project_address}}
+Prepared By: {{company_name}}
+
+--- INTRODUCTION ---
+Thank you for the opportunity to provide this proposal for your project. Our goal is to deliver professional workmanship, clear communication, and an organized process from start to finish. This proposal outlines the scope of work, project assumptions, estimated timeline, payment terms, and conditions associated with the services requested.
+
+We are committed to completing the work in a professional and timely manner while maintaining jobsite safety, cleanliness, and respect for the property. Any client-specific requests, selections, or special considerations should be documented and approved before work begins.
+
+--- PROJECT OVERVIEW ---
+The purpose of this project is to perform the following services:
+{{project_overview}}
+
+This proposal is based on the information available at the time of estimation and may be adjusted if concealed conditions, site limitations, code-related issues, or client-requested changes are discovered during the course of the work.
+
+--- SCOPE OF WORK ---
+The work included in this proposal consists of the following:
+
+{{scope_of_work}}
+
+Examples of formatting:
+- Demolition & removal of existing materials as required
+- Installation of new materials, components, or finishes
+- Repairs, adjustments, replacements, or upgrades as specified
+- Testing, basic cleanup, and final walkthrough upon completion
+
+--- EXCLUSIONS ---
+Unless specifically listed in the Scope of Work, the following items are excluded from this proposal:
+
+{{exclusions}}
+
+Examples:
+- Permits, engineering, architectural drawings, or inspections
+- Structural modifications not visible at time of estimate
+- Hidden damage, mold remediation, asbestos, lead, or hazardous material handling
+- Utility company fees or third-party vendor costs
+- Owner-supplied material warranty or replacement labor unless otherwise stated
+
+--- ALLOWANCES / SELECTIONS ---
+The following items may require final owner selection, material confirmation, or allowance approval prior to installation:
+
+{{allowances_or_selections}}
+
+Examples:
+- Tile, paint color, fixtures, hardware, vanity, countertop, appliances
+- Brand/model selections
+- Finish upgrades or custom orders
+- Materials subject to availability
+
+--- DELIVERABLES ---
+Upon completion of the approved work, the project deliverables will include:
+
+{{deliverables}}
+
+Examples:
+- Completion of agreed installation, repair, renovation, or replacement work
+- Basic debris removal from active work areas
+- Functional testing of installed systems/components where applicable
+- Final walkthrough with client
+
+--- PROJECT TIMELINE ---
+Estimated start date: {{estimated_start_date}}
+Estimated completion date: {{estimated_completion_date}}
+
+Estimated project duration:
+{{timeline_breakdown}}
+
+Example:
+- Preparation / protection: 1 day
+- Demolition: 1–2 days
+- Rough work: 1–3 days
+- Installation / finishing: 2–5 days
+- Final touch-ups / walkthrough: 1 day
+
+Project duration is an estimate only and may be affected by site conditions, material availability, weather, inspection scheduling, client changes, or conditions beyond our control.
+
+--- PAYMENT TERMS ---
+The total proposed price for the work described above is: {{project_price}}
+
+Payment schedule:
+{{payment_schedule}}
+
+Example options:
+- 50% deposit due upon acceptance of proposal
+- 25% progress payment due at midpoint of project
+- 25% final payment due upon substantial completion
+
+or
+
+- 50% deposit due at signing
+- Remaining 50% due upon completion
+
+Additional payment terms:
+- Any additional work not included in this proposal must be approved as a change order and may result in additional charges.
+- Late payments may delay scheduling, material ordering, project progress, or final delivery.
+- Final payment is due upon substantial completion unless otherwise agreed in writing.
+
+--- CHANGE ORDERS ---
+Any work requested by the client that is outside the original scope of work must be documented and approved in writing before the additional work is performed. Change orders may affect pricing, material needs, and project duration.
+
+--- SITE CONDITIONS ---
+This proposal is based on visible conditions at the time of the estimate. We are not responsible for hidden or concealed conditions including, but not limited to, structural deficiencies, water damage, code violations, pest damage, mold, rot, deteriorated framing, outdated utilities, or inaccessible systems discovered after work begins. Any such conditions will be brought to the client's attention and may require additional work and cost.
+
+--- MATERIALS & SUBSTITUTIONS ---
+Materials will be installed as specified in the proposal or based on approved selections. If a specified material becomes unavailable, a comparable substitute may be recommended for client approval. Delays caused by backorders, discontinued products, or supplier issues may impact the project timeline.
+
+--- PERMITS, CODES & APPROVALS ---
+Unless explicitly stated otherwise, permits, plans, engineering, and municipal approvals are excluded from this proposal. Work will be performed in accordance with standard trade practices; however, any required upgrades related to code compliance discovered during the project may result in additional charges if not included in the original scope.
+
+--- ACCESS, UTILITIES & JOBSITE CONDITIONS ---
+The client agrees to provide reasonable access to the work area during normal working hours and to ensure that water, electricity, and any other necessary utilities are available unless otherwise agreed. The work area should be reasonably cleared of personal items, furniture, valuables, and obstacles prior to the start of work.
+
+While every effort will be made to protect surrounding areas, construction and service work may generate dust, vibration, noise, and limited disruption. We recommend that sensitive or valuable items be removed from adjacent spaces before work begins.
+
+--- CLEANUP & DISPOSAL ---
+Basic jobsite cleanup is included unless otherwise stated. This includes removal of construction debris generated by our work from active work areas. Deep cleaning, specialized disposal, hazardous waste handling, and off-site hauling beyond standard debris removal are excluded unless specifically listed in the proposal.
+
+--- WARRANTY / GUARANTEE ---
+We warrant our workmanship for a period of {{workmanship_warranty_period}} from the date of substantial completion, covering defects caused by installation or labor performed by our company under normal use conditions.
+
+This warranty does not cover:
+- Owner abuse, misuse, neglect, or lack of maintenance
+- Manufacturer defects in owner-supplied materials
+- Normal wear and tear
+- Damage caused by third parties, weather, structural movement, utility issues, or conditions outside our control
+- Repairs or modifications performed by others after our work is completed
+
+Manufacturer warranties, if applicable, are subject to the terms provided by the manufacturer.
+
+--- CANCELLATION / RESCHEDULING ---
+Deposits may be non-refundable once scheduling, material ordering, fabrication, or mobilization has begun. Requested postponements or rescheduling may affect project start dates and crew availability.
+
+If the client cancels the project after acceptance and before completion, the client agrees to pay for work performed, materials ordered, restocking fees, and any costs incurred up to the cancellation date.
+
+--- LIMITATION OF LIABILITY ---
+Our liability under this proposal shall be limited to the value of the contracted work actually performed. We shall not be liable for incidental, indirect, special, or consequential damages, delays outside our control, or pre-existing conditions not caused by our work.
+
+--- ACCEPTANCE ---
+By signing below, the client acknowledges that they have reviewed and accepted the scope of work, pricing, payment terms, exclusions, and conditions outlined in this proposal.
+
+Client Signature: _________________________
+Print Name: ______________________________
+Date: ___________________________________
+
+Authorized Contractor Signature: _________________________
+Print Name: ___________________________________________
+Date: _________________________________________________
