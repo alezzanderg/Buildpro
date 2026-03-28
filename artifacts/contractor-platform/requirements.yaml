@@ -1,0 +1,18 @@
+packages:
+  "recharts": "For dashboard profit and revenue visualizations"
+  "date-fns": "For formatting dates in estimates and invoices"
+  "lucide-react": "For UI icons across the application"
+  "clsx": "For conditional class names"
+  "tailwind-merge": "For merging tailwind classes safely"
+
+images:
+  - path: "artifacts/contractor-platform/public/images/logo-icon.png"
+    description: "A bold, modern, minimalist industrial geometric logo icon for a contractor software platform, bright neon yellow and dark gray, transparent background"
+    aspect_ratio: "1:1"
+  - path: "artifacts/contractor-platform/public/images/dashboard-bg.png"
+    description: "Very subtle dark industrial texture background, faint grid lines, deep slate gray and black, low opacity, suitable for a dark mode dashboard backdrop"
+    aspect_ratio: "16:9"
+
+notes:
+  - Using generated React Query hooks directly from @workspace/api-client-react
+  - Expecting PDF generation to rely on standard browser print API with @media print CSS rules

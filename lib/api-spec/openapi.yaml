@@ -1,22 +1,30 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Contractor Estimate Platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: clients
+    description: Client management
+  - name: estimates
+    description: Estimate management
+  - name: invoices
+    description: Invoice management
+  - name: materials
+    description: Materials and price tracking
+  - name: suppliers
+    description: Supplier management
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +32,549 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /clients:
+    get:
+      operationId: listClients
+      tags: [clients]
+      summary: List all clients
+      responses:
+        "200":
+          description: List of clients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Client"
+    post:
+      operationId: createClient
+      tags: [clients]
+      summary: Create a client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClientRequest"
+      responses:
+        "201":
+          description: Created client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+
+  /clients/{id}:
+    get:
+      operationId: getClient
+      tags: [clients]
+      summary: Get a client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+    put:
+      operationId: updateClient
+      tags: [clients]
+      summary: Update a client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClientRequest"
+      responses:
+        "200":
+          description: Updated client
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+    delete:
+      operationId: deleteClient
+      tags: [clients]
+      summary: Delete a client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /estimates:
+    get:
+      operationId: listEstimates
+      tags: [estimates]
+      summary: List all estimates
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: clientId
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of estimates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Estimate"
+    post:
+      operationId: createEstimate
+      tags: [estimates]
+      summary: Create an estimate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEstimateRequest"
+      responses:
+        "201":
+          description: Created estimate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Estimate"
+
+  /estimates/{id}:
+    get:
+      operationId: getEstimate
+      tags: [estimates]
+      summary: Get an estimate with line items
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Estimate with details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EstimateDetail"
+    put:
+      operationId: updateEstimate
+      tags: [estimates]
+      summary: Update an estimate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEstimateRequest"
+      responses:
+        "200":
+          description: Updated estimate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EstimateDetail"
+    delete:
+      operationId: deleteEstimate
+      tags: [estimates]
+      summary: Delete an estimate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /estimates/{id}/convert-to-invoice:
+    post:
+      operationId: convertEstimateToInvoice
+      tags: [estimates]
+      summary: Convert estimate to invoice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: Created invoice
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invoice"
+
+  /estimates/{id}/line-items:
+    post:
+      operationId: addLineItem
+      tags: [estimates]
+      summary: Add a line item to an estimate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLineItemRequest"
+      responses:
+        "201":
+          description: Created line item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LineItem"
+
+  /estimates/{id}/line-items/{lineItemId}:
+    put:
+      operationId: updateLineItem
+      tags: [estimates]
+      summary: Update a line item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: lineItemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLineItemRequest"
+      responses:
+        "200":
+          description: Updated line item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LineItem"
+    delete:
+      operationId: deleteLineItem
+      tags: [estimates]
+      summary: Delete a line item
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: lineItemId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /invoices:
+    get:
+      operationId: listInvoices
+      tags: [invoices]
+      summary: List all invoices
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of invoices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Invoice"
+    post:
+      operationId: createInvoice
+      tags: [invoices]
+      summary: Create an invoice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateInvoiceRequest"
+      responses:
+        "201":
+          description: Created invoice
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Invoice"
+
+  /invoices/{id}:
+    get:
+      operationId: getInvoice
+      tags: [invoices]
+      summary: Get an invoice with details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Invoice with details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvoiceDetail"
+    put:
+      operationId: updateInvoice
+      tags: [invoices]
+      summary: Update an invoice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateInvoiceRequest"
+      responses:
+        "200":
+          description: Updated invoice
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvoiceDetail"
+
+  /materials:
+    get:
+      operationId: listMaterials
+      tags: [materials]
+      summary: List all materials
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: supplierId
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of materials
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Material"
+    post:
+      operationId: createMaterial
+      tags: [materials]
+      summary: Create a material
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMaterialRequest"
+      responses:
+        "201":
+          description: Created material
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Material"
+
+  /materials/{id}:
+    put:
+      operationId: updateMaterial
+      tags: [materials]
+      summary: Update a material
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMaterialRequest"
+      responses:
+        "200":
+          description: Updated material
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Material"
+    delete:
+      operationId: deleteMaterial
+      tags: [materials]
+      summary: Delete a material
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /materials/{id}/price-history:
+    get:
+      operationId: getMaterialPriceHistory
+      tags: [materials]
+      summary: Get price history for a material
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Price history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PriceHistory"
+
+  /suppliers:
+    get:
+      operationId: listSuppliers
+      tags: [suppliers]
+      summary: List all suppliers
+      responses:
+        "200":
+          description: List of suppliers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Supplier"
+    post:
+      operationId: createSupplier
+      tags: [suppliers]
+      summary: Create a supplier
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSupplierRequest"
+      responses:
+        "201":
+          description: Created supplier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Supplier"
+
+  /suppliers/{id}:
+    put:
+      operationId: updateSupplier
+      tags: [suppliers]
+      summary: Update a supplier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSupplierRequest"
+      responses:
+        "200":
+          description: Updated supplier
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Supplier"
+    delete:
+      operationId: deleteSupplier
+      tags: [suppliers]
+      summary: Delete a supplier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [health]
+      summary: Get dashboard statistics
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +585,553 @@ components:
       required:
         - status
 
+    Client:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        state:
+          type: string
+          nullable: true
+        zip:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required:
+        - id
+        - name
+        - createdAt
+
+    CreateClientRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+        state:
+          type: string
+          nullable: true
+        zip:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+      required:
+        - name
+
+    Estimate:
+      type: object
+      properties:
+        id:
+          type: integer
+        estimateNumber:
+          type: string
+        clientId:
+          type: integer
+          nullable: true
+        clientName:
+          type: string
+          nullable: true
+        projectName:
+          type: string
+        status:
+          type: string
+          description: "draft | sent | approved | rejected | invoiced"
+        subtotal:
+          type: number
+        materialsCost:
+          type: number
+        laborCost:
+          type: number
+        markupPercent:
+          type: number
+        markupAmount:
+          type: number
+        taxPercent:
+          type: number
+        taxAmount:
+          type: number
+        total:
+          type: number
+        profitMargin:
+          type: number
+        notes:
+          type: string
+          nullable: true
+        validUntil:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required:
+        - id
+        - estimateNumber
+        - projectName
+        - status
+        - subtotal
+        - materialsCost
+        - laborCost
+        - markupPercent
+        - markupAmount
+        - taxPercent
+        - taxAmount
+        - total
+        - profitMargin
+        - createdAt
+
+    EstimateDetail:
+      allOf:
+        - $ref: "#/components/schemas/Estimate"
+        - type: object
+          properties:
+            lineItems:
+              type: array
+              items:
+                $ref: "#/components/schemas/LineItem"
+            client:
+              $ref: "#/components/schemas/Client"
+              nullable: true
+          required:
+            - lineItems
+
+    CreateEstimateRequest:
+      type: object
+      properties:
+        clientId:
+          type: integer
+          nullable: true
+        projectName:
+          type: string
+        status:
+          type: string
+          default: draft
+        markupPercent:
+          type: number
+          default: 0
+        taxPercent:
+          type: number
+          default: 0
+        notes:
+          type: string
+          nullable: true
+        validUntil:
+          type: string
+          nullable: true
+        lineItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateLineItemRequest"
+      required:
+        - projectName
+
+    UpdateEstimateRequest:
+      type: object
+      properties:
+        clientId:
+          type: integer
+          nullable: true
+        projectName:
+          type: string
+        status:
+          type: string
+        markupPercent:
+          type: number
+        taxPercent:
+          type: number
+        notes:
+          type: string
+          nullable: true
+        validUntil:
+          type: string
+          nullable: true
+        lineItems:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateLineItemRequest"
+
+    LineItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        estimateId:
+          type: integer
+        type:
+          type: string
+          description: "labor | material | subcontractor | other"
+        category:
+          type: string
+          nullable: true
+        description:
+          type: string
+        quantity:
+          type: number
+        unit:
+          type: string
+          nullable: true
+        unitCost:
+          type: number
+        total:
+          type: number
+        materialId:
+          type: integer
+          nullable: true
+        supplierId:
+          type: integer
+          nullable: true
+        supplierName:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        sortOrder:
+          type: integer
+      required:
+        - id
+        - estimateId
+        - type
+        - description
+        - quantity
+        - unitCost
+        - total
+        - sortOrder
+
+    CreateLineItemRequest:
+      type: object
+      properties:
+        type:
+          type: string
+          default: material
+        category:
+          type: string
+          nullable: true
+        description:
+          type: string
+        quantity:
+          type: number
+        unit:
+          type: string
+          nullable: true
+        unitCost:
+          type: number
+        materialId:
+          type: integer
+          nullable: true
+        supplierId:
+          type: integer
+          nullable: true
+        supplierName:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        sortOrder:
+          type: integer
+          default: 0
+      required:
+        - description
+        - quantity
+        - unitCost
+
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: integer
+        invoiceNumber:
+          type: string
+        estimateId:
+          type: integer
+          nullable: true
+        clientId:
+          type: integer
+          nullable: true
+        clientName:
+          type: string
+          nullable: true
+        projectName:
+          type: string
+        status:
+          type: string
+          description: "draft | sent | paid | overdue | cancelled"
+        subtotal:
+          type: number
+        markupAmount:
+          type: number
+        taxAmount:
+          type: number
+        total:
+          type: number
+        amountPaid:
+          type: number
+        amountDue:
+          type: number
+        dueDate:
+          type: string
+          nullable: true
+        paidAt:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+      required:
+        - id
+        - invoiceNumber
+        - projectName
+        - status
+        - subtotal
+        - markupAmount
+        - taxAmount
+        - total
+        - amountPaid
+        - amountDue
+        - createdAt
+
+    InvoiceDetail:
+      allOf:
+        - $ref: "#/components/schemas/Invoice"
+        - type: object
+          properties:
+            lineItems:
+              type: array
+              items:
+                $ref: "#/components/schemas/LineItem"
+            client:
+              $ref: "#/components/schemas/Client"
+              nullable: true
+          required:
+            - lineItems
+
+    CreateInvoiceRequest:
+      type: object
+      properties:
+        estimateId:
+          type: integer
+          nullable: true
+        clientId:
+          type: integer
+          nullable: true
+        projectName:
+          type: string
+        status:
+          type: string
+          default: draft
+        dueDate:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+      required:
+        - projectName
+
+    UpdateInvoiceRequest:
+      type: object
+      properties:
+        status:
+          type: string
+        dueDate:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        amountPaid:
+          type: number
+        paidAt:
+          type: string
+          nullable: true
+
+    Material:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        unit:
+          type: string
+          nullable: true
+        currentPrice:
+          type: number
+        supplierId:
+          type: integer
+          nullable: true
+        supplierName:
+          type: string
+          nullable: true
+        sku:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+        lastUpdated:
+          type: string
+      required:
+        - id
+        - name
+        - currentPrice
+        - lastUpdated
+
+    CreateMaterialRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        category:
+          type: string
+          nullable: true
+        unit:
+          type: string
+          nullable: true
+        currentPrice:
+          type: number
+        supplierId:
+          type: integer
+          nullable: true
+        sku:
+          type: string
+          nullable: true
+        url:
+          type: string
+          nullable: true
+      required:
+        - name
+        - currentPrice
+
+    PriceHistory:
+      type: object
+      properties:
+        id:
+          type: integer
+        materialId:
+          type: integer
+        price:
+          type: number
+        recordedAt:
+          type: string
+        notes:
+          type: string
+          nullable: true
+      required:
+        - id
+        - materialId
+        - price
+        - recordedAt
+
+    Supplier:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        website:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+      required:
+        - id
+        - name
+
+    CreateSupplierRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        website:
+          type: string
+          nullable: true
+        phone:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+      required:
+        - name
+
+    DashboardStats:
+      type: object
+      properties:
+        totalEstimates:
+          type: integer
+        pendingEstimates:
+          type: integer
+        approvedEstimates:
+          type: integer
+        totalInvoices:
+          type: integer
+        paidInvoices:
+          type: integer
+        overdueInvoices:
+          type: integer
+        totalRevenue:
+          type: number
+        pendingRevenue:
+          type: number
+        totalProfit:
+          type: number
+        avgProfitMargin:
+          type: number
+      required:
+        - totalEstimates
+        - pendingEstimates
+        - approvedEstimates
+        - totalInvoices
+        - paidInvoices
+        - overdueInvoices
+        - totalRevenue
+        - pendingRevenue
+        - totalProfit
+        - avgProfitMargin
