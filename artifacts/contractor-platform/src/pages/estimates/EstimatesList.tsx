@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { BlobProvider } from "@react-pdf/renderer";
 import { EstimatePdfDocument, downloadEstimatePdf, PDF_TEMPLATES, type PdfTemplate } from "@/lib/estimatePdf";
+import { loadCompanySettings } from "@/hooks/useCompanySettings";
 
 export default function EstimatesList() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -279,8 +280,16 @@ function CreateEstimateDialog({ onSuccess }: { onSuccess: (id: number) => void }
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!projectName) return;
+    const { defaultTaxRate, defaultMarkup } = loadCompanySettings();
     createMutation.mutate(
-      { data: { projectName, clientId: clientId === "" ? null : clientId, status: "draft" } },
+      { data: {
+          projectName,
+          clientId: clientId === "" ? null : clientId,
+          status: "draft",
+          taxPercent: defaultTaxRate,
+          markupPercent: defaultMarkup,
+        }
+      },
       { onSuccess: (data) => { setOpen(false); onSuccess(data.id); } }
     );
   };

@@ -10,6 +10,8 @@ export interface CompanySettings {
   zip: string;
   license: string;
   website: string;
+  defaultTaxRate: number;
+  defaultMarkup: number;
 }
 
 const STORAGE_KEY = "probuilder_company_settings";
@@ -24,6 +26,8 @@ const DEFAULTS: CompanySettings = {
   zip: "12345",
   license: "GC-2024-001234",
   website: "www.probuilder.com",
+  defaultTaxRate: 0,
+  defaultMarkup: 0,
 };
 
 export function loadCompanySettings(): CompanySettings {
