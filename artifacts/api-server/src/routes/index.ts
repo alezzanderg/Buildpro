@@ -8,6 +8,7 @@ import invoicesRouter from "./invoices.js";
 import dashboardRouter from "./dashboard.js";
 import proposalsRouter from "./proposals.js";
 import enhanceRouter from "./enhance.js";
+import settingsRouter from "./settings.js";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use(invoicesRouter);
 router.use(dashboardRouter);
 router.use(proposalsRouter);
 router.use(enhanceRouter);
+router.use(settingsRouter);
 
 export default router;

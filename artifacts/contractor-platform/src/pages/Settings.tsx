@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useCompanySettings } from "@/hooks/useCompanySettings";
 import { Button } from "@/components/ui/button";
@@ -6,30 +6,44 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Building2, Save, RotateCcw, SlidersHorizontal, Percent,
+  Building2, Save, RotateCcw, SlidersHorizontal, Percent, Loader2,
 } from "lucide-react";
 
 const TAX_PRESETS = [0, 6, 6.5, 7, 7.5, 8, 8.25, 8.5, 9, 9.5, 10];
 const MARKUP_PRESETS = [0, 5, 10, 15, 20, 25, 30];
 
 export default function Settings() {
-  const { settings, save } = useCompanySettings();
+  const { settings, save, isLoading, isSaving } = useCompanySettings();
   const { toast } = useToast();
 
   const [form, setForm] = useState({ ...settings });
+  const [initialized, setInitialized] = useState(false);
+
+  // Re-initialize form once settings load from the database
+  useEffect(() => {
+    if (!isLoading && !initialized) {
+      setForm({ ...settings });
+      setInitialized(true);
+    }
+  }, [isLoading, initialized, settings]);
+
   const isDirty = JSON.stringify(form) !== JSON.stringify(settings);
 
   const set = (field: string, value: string | number) =>
     setForm((prev) => ({ ...prev, [field]: value }));
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim()) {
       toast({ title: "Company name is required", variant: "destructive" });
       return;
     }
-    save(form);
-    toast({ title: "Settings saved", description: "Changes will appear on all new PDFs." });
+    try {
+      await save(form);
+      toast({ title: "Settings saved", description: "Changes will appear on all new PDFs." });
+    } catch {
+      toast({ title: "Failed to save settings", variant: "destructive" });
+    }
   };
 
   const handleReset = () => setForm({ ...settings });
@@ -325,13 +339,16 @@ export default function Settings() {
 
           {/* Actions — always visible */}
           <div className="flex justify-end gap-3 pt-6">
-            {isDirty && (
+            {isDirty && !isSaving && (
               <Button type="button" variant="outline" onClick={handleReset} className="border-border">
                 <RotateCcw className="w-4 h-4 mr-2" /> Discard Changes
               </Button>
             )}
-            <Button type="submit" disabled={!isDirty} className="bg-primary text-primary-foreground">
-              <Save className="w-4 h-4 mr-2" /> Save Settings
+            <Button type="submit" disabled={!isDirty || isSaving} className="bg-primary text-primary-foreground min-w-[130px]">
+              {isSaving
+                ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
+                : <><Save className="w-4 h-4 mr-2" /> Save Settings</>
+              }
             </Button>
           </div>
         </form>
