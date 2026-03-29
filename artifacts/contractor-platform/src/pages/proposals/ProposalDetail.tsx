@@ -16,12 +16,19 @@ import { useToast } from "@/hooks/use-toast";
 import {
   ArrowLeft, Save, Download, Eye, EyeOff, ChevronDown,
   Send, Check, X, Loader2, Sparkles, Palette, ClipboardCopy, ChevronRight,
-  ExternalLink,
+  ExternalLink, PackagePlus,
 } from "lucide-react";
 import { useGetProposal, useUpdateProposal } from "@/hooks/useProposals";
-import { useListClients } from "@workspace/api-client-react";
+import { useListClients, useListEstimates } from "@workspace/api-client-react";
+import type { EstimateDetail } from "@workspace/api-client-react";
 import { downloadProposalPdf, ProposalPdfDocument, PDF_TEMPLATES } from "@/lib/proposalPdf";
 import type { PdfTemplate } from "@/lib/proposalPdf";
+import { PDF_TEMPLATES as ESTIMATE_PDF_TEMPLATES } from "@/lib/estimatePdf";
+import type { PdfTemplate as EstimateTemplate } from "@/lib/estimatePdf";
+import { downloadBundlePdf } from "@/lib/bundlePdf";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from "@/components/ui/dialog";
 import { useCompanySettings, useLogoDataUrl } from "@/hooks/useCompanySettings";
 import type { ProposalDetail as ProposalDetailType } from "@/hooks/useProposals";
 import { PDFViewer } from "@react-pdf/renderer";
@@ -120,6 +127,7 @@ function parseTermsConfig(raw: string | null | undefined): Record<string, boolea
 // ── Live PDF preview panel ────────────────────────────────────────────
 function PdfPreviewPanel({
   proposal, template, onTemplateChange, onDownload, downloading, logoSrc,
+  onBundle, bundling,
 }: {
   proposal: ProposalDetailType;
   template: PdfTemplate;
@@ -127,6 +135,8 @@ function PdfPreviewPanel({
   onDownload: () => void;
   downloading: boolean;
   logoSrc?: string;
+  onBundle: () => void;
+  bundling: boolean;
 }) {
   return (
     <div className="flex flex-col h-full border-l border-border bg-card">
@@ -151,10 +161,19 @@ function PdfPreviewPanel({
           <ProposalPdfDocument proposal={proposal} template={template} logoSrc={logoSrc} />
         </PDFViewer>
       </div>
-      <div className="p-3 border-t border-border flex-shrink-0">
-        <Button className="w-full gap-2" onClick={onDownload} disabled={downloading}>
+      <div className="p-3 border-t border-border flex-shrink-0 space-y-2">
+        <Button className="w-full gap-2" onClick={onDownload} disabled={downloading || bundling}>
           {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
           {downloading ? "Generating..." : "Download PDF"}
+        </Button>
+        <Button
+          variant="outline"
+          className="w-full gap-2 border-primary/40 text-primary hover:bg-primary/10"
+          onClick={onBundle}
+          disabled={downloading || bundling}
+        >
+          {bundling ? <Loader2 className="w-4 h-4 animate-spin" /> : <PackagePlus className="w-4 h-4" />}
+          {bundling ? "Building bundle..." : "Bundle with Estimate..."}
         </Button>
       </div>
     </div>
@@ -209,6 +228,7 @@ export default function ProposalDetail() {
 
   const { data: proposal, isLoading } = useGetProposal(proposalId, { enabled: !!proposalId });
   const { data: clients = [] } = useListClients();
+  const { data: estimates = [] } = useListEstimates();
   const updateProposal = useUpdateProposal();
   const { settings: companySettings } = useCompanySettings();
   const logoSrc = useLogoDataUrl(companySettings.logoUrl);
@@ -221,6 +241,10 @@ export default function ProposalDetail() {
   const [pdfTemplate, setPdfTemplate] = useState<PdfTemplate>("classic");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [pdfGenerating, setPdfGenerating] = useState(false);
+  const [bundleOpen, setBundleOpen] = useState(false);
+  const [bundleEstimateId, setBundleEstimateId] = useState<number | null>(null);
+  const [bundleEstTemplate, setBundleEstTemplate] = useState<EstimateTemplate>("classic");
+  const [bundleGenerating, setBundleGenerating] = useState(false);
   const [enhancing, setEnhancing] = useState<Partial<Record<string, boolean>>>({});
   const [enhancingAll, setEnhancingAll] = useState(false);
   const [previewData, setPreviewData] = useState<ProposalDetailType | null>(null);
@@ -487,6 +511,22 @@ export default function ProposalDetail() {
     try { await downloadProposalPdf(mergedProposal, pdfTemplate); }
     catch { toast({ title: "PDF generation failed", variant: "destructive" }); }
     finally { setPdfGenerating(false); }
+  }
+
+  async function handleDownloadBundle() {
+    if (!mergedProposal || !bundleEstimateId) return;
+    const estimate = estimates.find(e => e.id === bundleEstimateId);
+    if (!estimate) return;
+    setBundleGenerating(true);
+    setBundleOpen(false);
+    try {
+      await downloadBundlePdf(mergedProposal, estimate as EstimateDetail, pdfTemplate, bundleEstTemplate);
+      toast({ title: "Bundle downloaded" });
+    } catch {
+      toast({ title: "Bundle generation failed", variant: "destructive" });
+    } finally {
+      setBundleGenerating(false);
+    }
   }
 
   if (isLoading || !form) {
@@ -804,11 +844,83 @@ export default function ProposalDetail() {
                 onDownload={handleDownloadPdf}
                 downloading={pdfGenerating}
                 logoSrc={logoSrc}
+                onBundle={() => setBundleOpen(true)}
+                bundling={bundleGenerating}
               />
             </div>
           )}
         </div>
       </div>
+
+      {/* Bundle PDF dialog */}
+      <Dialog open={bundleOpen} onOpenChange={setBundleOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <PackagePlus className="w-5 h-5 text-primary" />
+              Bundle Proposal + Estimate
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Select Estimate</label>
+              <p className="text-xs text-muted-foreground">Choose an estimate to combine with this proposal into a single PDF.</p>
+              {estimates.length === 0 ? (
+                <p className="text-sm text-muted-foreground italic py-2">No estimates found. Create one first.</p>
+              ) : (
+                <div className="border border-border rounded-lg divide-y divide-border max-h-52 overflow-y-auto">
+                  {estimates.map(est => (
+                    <button
+                      key={est.id}
+                      onClick={() => setBundleEstimateId(est.id)}
+                      className={`w-full text-left px-3 py-2.5 flex items-center justify-between transition-colors ${
+                        bundleEstimateId === est.id
+                          ? "bg-primary/10 text-primary"
+                          : "hover:bg-muted/50 text-foreground"
+                      }`}
+                    >
+                      <div>
+                        <p className="text-sm font-medium">{est.estimateNumber}</p>
+                        <p className="text-xs text-muted-foreground">{est.projectName}{est.clientName ? ` · ${est.clientName}` : ""}</p>
+                      </div>
+                      {bundleEstimateId === est.id && <Check className="w-4 h-4 flex-shrink-0" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-foreground">Estimate Template</label>
+              <Select value={bundleEstTemplate} onValueChange={v => setBundleEstTemplate(v as EstimateTemplate)}>
+                <SelectTrigger className="h-9 text-sm border-border">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ESTIMATE_PDF_TEMPLATES.map(t => (
+                    <SelectItem key={t.id} value={t.id} className="text-sm">{t.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">Proposal will use the "{PDF_TEMPLATES.find(t => t.id === pdfTemplate)?.label}" template selected in the preview.</p>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setBundleOpen(false)}>Cancel</Button>
+            <Button
+              onClick={handleDownloadBundle}
+              disabled={!bundleEstimateId}
+              className="gap-2"
+            >
+              <Download className="w-4 h-4" />
+              Download Bundle
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </AppLayout>
   );
 }
