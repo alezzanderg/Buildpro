@@ -205,8 +205,12 @@ export default function Settings() {
   const [form, setForm] = useState({ ...settings });
   const [initialized, setInitialized] = useState(false);
   const [logoUploading, setLogoUploading] = useState(false);
+  const [autoSaved, setAutoSaved] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const userEditedRef = useRef(false);
 
+  // Initialize form from server data (once)
   useEffect(() => {
     if (!isLoading && !initialized) {
       setForm({ ...settings });
@@ -214,9 +218,30 @@ export default function Settings() {
     }
   }, [isLoading, initialized, settings]);
 
+  // Auto-save whenever form changes, after user has made at least one edit
+  useEffect(() => {
+    if (!initialized || !userEditedRef.current) return;
+    if (!form.name.trim()) return;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    setAutoSaved(false);
+    saveTimer.current = setTimeout(async () => {
+      try {
+        await save(form);
+        setAutoSaved(true);
+        setTimeout(() => setAutoSaved(false), 3000);
+      } catch {
+        // Silent fail — user can still use the manual Save button
+      }
+    }, 1200);
+    return () => { if (saveTimer.current) clearTimeout(saveTimer.current); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form, initialized]);
+
   const isDirty = JSON.stringify(form) !== JSON.stringify(settings);
-  const set = (field: string, value: string | number) =>
+  const set = (field: string, value: string | number) => {
+    userEditedRef.current = true;
     setForm((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -224,8 +249,11 @@ export default function Settings() {
       toast({ title: "Company name is required", variant: "destructive" });
       return;
     }
+    if (saveTimer.current) clearTimeout(saveTimer.current);
     try {
       await save(form);
+      setAutoSaved(true);
+      setTimeout(() => setAutoSaved(false), 3000);
       toast({ title: "Settings saved", description: "Changes will appear on all new PDFs." });
     } catch {
       toast({ title: "Failed to save settings", variant: "destructive" });
@@ -243,6 +271,8 @@ export default function Settings() {
       toast({ title: "Image must be under 5 MB", variant: "destructive" });
       return;
     }
+    // Cancel any pending auto-save to avoid race condition
+    if (saveTimer.current) clearTimeout(saveTimer.current);
     setLogoUploading(true);
     try {
       const metaRes = await fetch(`${BASE_URL}/api/storage/uploads/request-url`, {
@@ -261,8 +291,10 @@ export default function Settings() {
       });
       if (!uploadRes.ok) throw new Error("Upload failed");
 
-      const updated = await save({ ...settings, logoUrl: objectPath });
-      setForm(f => ({ ...f, logoUrl: (updated as typeof settings).logoUrl ?? objectPath }));
+      // Save using current form state (not stale server state) so unsaved edits are preserved
+      const latestForm = { ...form, logoUrl: objectPath };
+      setForm(latestForm);
+      await save(latestForm);
       toast({ title: "Logo uploaded", description: "Your logo will appear on all new PDFs." });
     } catch (err) {
       toast({ title: "Logo upload failed", description: String(err), variant: "destructive" });
@@ -273,9 +305,11 @@ export default function Settings() {
   };
 
   const handleRemoveLogo = async () => {
+    if (saveTimer.current) clearTimeout(saveTimer.current);
     try {
-      await save({ ...settings, logoUrl: "" });
-      setForm(f => ({ ...f, logoUrl: "" }));
+      const latestForm = { ...form, logoUrl: "" };
+      setForm(latestForm);
+      await save(latestForm);
       toast({ title: "Logo removed" });
     } catch {
       toast({ title: "Failed to remove logo", variant: "destructive" });
@@ -333,9 +367,9 @@ export default function Settings() {
                 <div className="flex items-center gap-5">
                   {/* Preview */}
                   <div className="w-24 h-24 rounded-xl border-2 border-dashed border-border bg-secondary/30 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                    {settings.logoUrl ? (
+                    {form.logoUrl ? (
                       <img
-                        src={`${BASE_URL}/api/storage${settings.logoUrl}`}
+                        src={`${BASE_URL}/api/storage${form.logoUrl}`}
                         alt="Company logo"
                         className="w-full h-full object-contain p-1"
                       />
@@ -365,10 +399,10 @@ export default function Settings() {
                     >
                       {logoUploading
                         ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading…</>
-                        : <><Upload className="w-4 h-4" /> {settings.logoUrl ? "Replace Logo" : "Upload Logo"}</>
+                        : <><Upload className="w-4 h-4" /> {form.logoUrl ? "Replace Logo" : "Upload Logo"}</>
                       }
                     </Button>
-                    {settings.logoUrl && !logoUploading && (
+                    {form.logoUrl && !logoUploading && (
                       <Button
                         type="button"
                         variant="ghost"
@@ -525,18 +559,35 @@ export default function Settings() {
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-2">
-                {isDirty && !isSaving && (
-                  <Button type="button" variant="outline" onClick={() => setForm({ ...settings })} className="border-border">
-                    <RotateCcw className="w-4 h-4 mr-2" /> Discard Changes
+              <div className="flex items-center justify-between pt-2">
+                <div className="text-sm text-muted-foreground">
+                  {isSaving && (
+                    <span className="flex items-center gap-1.5">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Saving…
+                    </span>
+                  )}
+                  {!isSaving && autoSaved && (
+                    <span className="flex items-center gap-1.5 text-green-500">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> All changes saved
+                    </span>
+                  )}
+                  {!isSaving && !autoSaved && isDirty && (
+                    <span className="text-yellow-500/80">Unsaved changes</span>
+                  )}
+                </div>
+                <div className="flex gap-3">
+                  {isDirty && !isSaving && (
+                    <Button type="button" variant="outline" onClick={() => { userEditedRef.current = false; setForm({ ...settings }); }} className="border-border">
+                      <RotateCcw className="w-4 h-4 mr-2" /> Discard
+                    </Button>
+                  )}
+                  <Button type="submit" disabled={!isDirty || isSaving} className="bg-primary text-primary-foreground min-w-[130px]">
+                    {isSaving
+                      ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
+                      : <><Save className="w-4 h-4 mr-2" /> Save Now</>
+                    }
                   </Button>
-                )}
-                <Button type="submit" disabled={!isDirty || isSaving} className="bg-primary text-primary-foreground min-w-[130px]">
-                  {isSaving
-                    ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
-                    : <><Save className="w-4 h-4 mr-2" /> Save Settings</>
-                  }
-                </Button>
+                </div>
               </div>
             </TabsContent>
 
@@ -653,18 +704,35 @@ export default function Settings() {
                 </p>
               </div>
 
-              <div className="flex justify-end gap-3 pt-2">
-                {isDirty && !isSaving && (
-                  <Button type="button" variant="outline" onClick={() => setForm({ ...settings })} className="border-border">
-                    <RotateCcw className="w-4 h-4 mr-2" /> Discard Changes
+              <div className="flex items-center justify-between pt-2">
+                <div className="text-sm text-muted-foreground">
+                  {isSaving && (
+                    <span className="flex items-center gap-1.5">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Saving…
+                    </span>
+                  )}
+                  {!isSaving && autoSaved && (
+                    <span className="flex items-center gap-1.5 text-green-500">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> All changes saved
+                    </span>
+                  )}
+                  {!isSaving && !autoSaved && isDirty && (
+                    <span className="text-yellow-500/80">Unsaved changes</span>
+                  )}
+                </div>
+                <div className="flex gap-3">
+                  {isDirty && !isSaving && (
+                    <Button type="button" variant="outline" onClick={() => { userEditedRef.current = false; setForm({ ...settings }); }} className="border-border">
+                      <RotateCcw className="w-4 h-4 mr-2" /> Discard
+                    </Button>
+                  )}
+                  <Button type="submit" disabled={!isDirty || isSaving} className="bg-primary text-primary-foreground min-w-[130px]">
+                    {isSaving
+                      ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
+                      : <><Save className="w-4 h-4 mr-2" /> Save Now</>
+                    }
                   </Button>
-                )}
-                <Button type="submit" disabled={!isDirty || isSaving} className="bg-primary text-primary-foreground min-w-[130px]">
-                  {isSaving
-                    ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</>
-                    : <><Save className="w-4 h-4 mr-2" /> Save Settings</>
-                  }
-                </Button>
+                </div>
               </div>
             </TabsContent>
 
